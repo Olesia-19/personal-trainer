@@ -1,0 +1,94 @@
+.section {
+  padding: 7rem 0;
+  background: #07080c;
+  color: #f6f7fb;
+}
+
+.container {
+  width: min(1120px, 100%);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.75rem);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 620;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(235, 239, 249, 0.54);
+}
+
+.headline {
+  margin: 1.1rem auto 0;
+  max-width: 19ch;
+  text-align: center;
+  font-size: clamp(2rem, 3.8vw, 2.8rem);
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: rgba(246, 247, 251, 0.98);
+  text-wrap: balance;
+}
+
+.columns {
+  margin-top: 3.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.25rem, 2.4vw, 2.2rem);
+  text-align: left;
+}
+
+.column {
+  min-height: 100%;
+  padding: 0.35rem 0.2rem;
+}
+
+.columnTitle {
+  margin: 0;
+  font-size: clamp(1.14rem, 1.75vw, 1.5rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  font-weight: 710;
+  color: rgba(246, 247, 251, 0.97);
+}
+
+.columnText {
+  margin: 1rem 0 0;
+  max-width: 34ch;
+  font-size: clamp(0.96rem, 1.1vw, 1.05rem);
+  line-height: 1.74;
+  letter-spacing: 0.008em;
+  color: rgba(228, 233, 245, 0.72);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 5.4rem 0;
+  }
+
+  .headline {
+    margin-top: 1rem;
+    max-width: 18ch;
+    line-height: 1.24;
+  }
+
+  .columns {
+    margin-top: 2.35rem;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    text-align: center;
+  }
+
+  .column {
+    padding: 0;
+  }
+
+  .columnText {
+    margin: 0.9rem auto 0;
+    max-width: 68ch;
+    line-height: 1.68;
+  }
+}
