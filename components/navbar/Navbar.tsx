@@ -6,7 +6,6 @@ import styles from "./Navbar.module.css";
 const NAV_LINKS = [
   { label: "Services", href: "#services" },
   { label: "About", href: "#about" },
-  { label: "Pricing", href: "#pricing" },
   { label: "Book Session", href: "#book" },
 ] as const;
 
@@ -38,7 +37,7 @@ const Navbar = () => {
       className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}
     >
       <div className={styles.inner}>
-        <a href="#" className={styles.logo} onClick={closeMenu}>
+        <a href="/" className={styles.logo} onClick={closeMenu}>
           ELITE
         </a>
 

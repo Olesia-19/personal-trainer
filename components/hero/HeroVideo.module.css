@@ -1,0 +1,41 @@
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--bg, #0a0a0b);
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 10, 11, 0.92) 0%,
+    rgba(10, 10, 11, 0.68) 32%,
+    rgba(10, 10, 11, 0.15) 58%,
+    transparent 100%
+  );
+}
+
+@media (max-width: 760px) {
+  .scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 11, 0.1) 0%,
+      rgba(10, 10, 11, 0.5) 48%,
+      rgba(10, 10, 11, 0.96) 100%
+    );
+  }
+}
