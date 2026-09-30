@@ -18,6 +18,11 @@
 - /components — reusable UI
 - /styles — CSS modules
 
+## Design Reference
+Before styling any component, always read and follow the tokens and
+conventions in `docs/design-tokens.md` (colors, typography, radius,
+motion rules). Treat it as an extension of this file.
+
 ## UI Guidelines
 
 - Clean, minimal design

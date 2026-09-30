@@ -1,22 +1,26 @@
 .hero {
-  --bg: #0a0a0b;
-  --bg-elev: #141416;
-  --line: rgba(255, 255, 255, 0.08);
-  --ink: #f5f2ec;
-  --ink-muted: #a3a09a;
-  --ink-faint: #6b6863;
-  --gold: #c9a15c;
-
   position: relative;
   isolation: isolate;
   overflow: hidden;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  min-height: min(88vh, 780px);
+  min-height: min(90vh, 860px);
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-inter), system-ui, sans-serif;
+  --hero-dim: 0;
+}
+
+/* Dim layer above video, below text (.shell z-index: 1) */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--bg);
+  opacity: var(--hero-dim, 0);
 }
 
 .shell {
@@ -35,41 +39,7 @@
   text-align: left;
 }
 
-.glassPanel {
-  position: absolute;
-  z-index: 0;
-  inset: -56px;
-  pointer-events: none;
-  opacity: 0;
-  background: rgba(10, 10, 11, 0.42);
-  backdrop-filter: blur(28px) saturate(115%);
-  -webkit-backdrop-filter: blur(28px) saturate(115%);
-  mask-image: radial-gradient(
-    ellipse farthest-corner at 30% 50%,
-    #000 45%,
-    rgba(0, 0, 0, 0.5) 75%,
-    transparent 100%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse farthest-corner at 30% 50%,
-    #000 45%,
-    rgba(0, 0, 0, 0.5) 75%,
-    transparent 100%
-  );
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  -webkit-mask-size: 100% 100%;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glassPanel {
-    background: rgba(10, 10, 11, 0.72);
-  }
-}
-
 .eyebrow,
-.headline,
 .lead,
 .actions,
 .badges {
@@ -88,7 +58,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--accent-text);
 }
 
 .eyebrow::before {
@@ -96,11 +66,13 @@
   display: block;
   width: 1.1rem;
   height: 1px;
-  background: var(--gold);
+  background: var(--accent);
   flex-shrink: 0;
 }
 
 .headline {
+  position: relative;
+  z-index: 1;
   margin: 1.15rem 0 0;
   font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
   font-size: clamp(2.35rem, 4.6vw, 3.65rem);
@@ -108,6 +80,19 @@
   line-height: 1.08;
   letter-spacing: -0.025em;
   color: var(--ink);
+}
+
+.headlineLine {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.headlineLineInner {
+  display: block;
+  opacity: 0;
+  transform: translateY(110%);
 }
 
 .lead {
@@ -202,11 +187,12 @@
 @media (max-width: 760px) {
   .hero {
     min-height: 100svh;
-    align-items: flex-end;
+    align-items: flex-start;
+    background: var(--bg);
   }
 
   .shell {
-    padding-top: 5.5rem;
+    padding-top: calc(46svh - 1.5rem);
     padding-bottom: 56px;
     width: 100%;
   }
@@ -215,21 +201,6 @@
     max-width: 100%;
     margin-inline: auto;
     text-align: center;
-  }
-
-  .glassPanel {
-    mask-image: radial-gradient(
-      ellipse farthest-corner at 50% 55%,
-      #000 45%,
-      rgba(0, 0, 0, 0.5) 75%,
-      transparent 100%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse farthest-corner at 50% 55%,
-      #000 45%,
-      rgba(0, 0, 0, 0.5) 75%,
-      transparent 100%
-    );
   }
 
   .eyebrow {
@@ -247,11 +218,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .eyebrow,
-  .headline,
   .lead,
   .actions,
-  .badges,
-  .glassPanel {
+  .badges {
+    opacity: 1;
+    transform: none;
+  }
+
+  .headlineLineInner {
     opacity: 1;
     transform: none;
   }

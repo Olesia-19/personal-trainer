@@ -1,27 +1,24 @@
 "use client";
 
+import { Fraunces } from "next/font/google";
 import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
 const NAV_LINKS = [
-  { label: "Services", href: "#services" },
-  { label: "About", href: "#about" },
-  { label: "Book Session", href: "#book" },
+  { label: "Coach", href: "#about" },
+  { label: "Programs", href: "#services" },
+  { label: "Results", href: "#services" },
+  { label: "FAQ", href: "#book" },
 ] as const;
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 32);
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -33,18 +30,16 @@ const Navbar = () => {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header
-      className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}
-    >
+    <header className={`${styles.navbar} ${fraunces.variable}`}>
       <div className={styles.inner}>
         <a href="/" className={styles.logo} onClick={closeMenu}>
-          ELITE
+          ELITE<span className={styles.logoDot}>.</span>
         </a>
 
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <ul className={styles.navList}>
             {NAV_LINKS.map(({ label, href }) => (
-              <li key={href}>
+              <li key={label}>
                 <a href={href} className={styles.navLink}>
                   {label}
                 </a>
@@ -53,17 +48,23 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        <button
-          type="button"
-          className={`${styles.menuToggle} ${menuOpen ? styles.menuToggleOpen : ""}`}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span className={styles.menuBar} />
-          <span className={styles.menuBar} />
-        </button>
+        <div className={styles.trailing}>
+          <a href="#book" className={styles.cta} onClick={closeMenu}>
+            Book a session
+          </a>
+
+          <button
+            type="button"
+            className={`${styles.menuToggle} ${menuOpen ? styles.menuToggleOpen : ""}`}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className={styles.menuBar} />
+            <span className={styles.menuBar} />
+          </button>
+        </div>
       </div>
 
       <nav
@@ -74,12 +75,17 @@ const Navbar = () => {
       >
         <ul className={styles.mobileList}>
           {NAV_LINKS.map(({ label, href }) => (
-            <li key={href}>
+            <li key={label}>
               <a href={href} className={styles.mobileLink} onClick={closeMenu}>
                 {label}
               </a>
             </li>
           ))}
+          <li>
+            <a href="#book" className={styles.mobileCta} onClick={closeMenu}>
+              Book a session
+            </a>
+          </li>
         </ul>
       </nav>
     </header>

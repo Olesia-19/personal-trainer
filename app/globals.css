@@ -1,13 +1,23 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg: #0d0e10;
+  --bg-elev: #1c1e22;
+  --line: rgba(255, 255, 255, 0.08);
+  --ink: #eef1f4;
+  --ink-muted: #9aa3ac;
+  --ink-faint: #6b747c;
+  --accent: #6fa3c7;
+  --accent-soft: rgba(111, 163, 199, 0.14);
+  --accent-text: #a9bfcb;
+  --accent-glow: rgba(111, 163, 199, 0.09);
+  --accent-glow-soft: rgba(111, 163, 199, 0.12);
+  --sage: #7c9686;
+  --radius-s: 4px;
+  --radius-m: 10px;
+  --radius-l: 22px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Aliases kept for existing body/page usage */
+  --background: var(--bg);
+  --foreground: var(--ink);
 }
 
 html {
@@ -15,18 +25,12 @@ html {
   scroll-behavior: smooth;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
 body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--ink);
+  background: var(--bg);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -43,8 +47,6 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+html {
+  color-scheme: dark;
 }
