@@ -168,7 +168,13 @@ const Hero = () => {
         const zoomTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: hero,
-            start: "top top",
+            start: () => {
+              const header = document.querySelector("[data-site-header]");
+              const offset = header
+                ? Math.round(header.getBoundingClientRect().height)
+                : 0;
+              return `top ${offset}px`;
+            },
             end: () => `+=${Math.round(window.innerHeight * PIN_RATIO)}`,
             pin: true,
             pinSpacing: true,

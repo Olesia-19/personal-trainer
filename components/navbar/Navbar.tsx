@@ -30,7 +30,10 @@ const Navbar = () => {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header className={`${styles.navbar} ${fraunces.variable}`}>
+    <header
+      className={`${styles.navbar} ${fraunces.variable}`}
+      data-site-header
+    >
       <div className={styles.inner}>
         <a href="/" className={styles.logo} onClick={closeMenu}>
           ELITE<span className={styles.logoDot}>.</span>
