@@ -1,6 +1,5 @@
 "use client";
 
-import { Fraunces, Inter } from "next/font/google";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MouseEvent, useEffect, useRef } from "react";
@@ -9,18 +8,6 @@ import styles from "./Hero.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const HEADLINE_LINES = [
   "Transform Your Body.",
@@ -271,14 +258,14 @@ const Hero = () => {
   return (
     <section
       ref={heroRef}
-      className={`${styles.hero} ${fraunces.variable} ${inter.variable}`}
+      className={styles.hero}
       aria-labelledby="hero-heading"
     >
       <HeroVideo ref={videoRef} />
-      <div className={styles.shell}>
+      <div className={`container ${styles.shell}`}>
         <div className={styles.content}>
-          <p ref={eyebrowRef} className={styles.eyebrow}>
-            ELITE PERSONAL TRAINING
+          <p ref={eyebrowRef} className={`eyebrow ${styles.eyebrow}`}>
+            Elite personal training
           </p>
           <h1 id="hero-heading" className={styles.headline}>
             {HEADLINE_LINES.map((line, index) => (
@@ -300,19 +287,19 @@ const Hero = () => {
           <div ref={actionsRef} className={styles.actions}>
             <a
               href="#book"
-              className={styles.primaryCta}
+              className={`btn btn-primary ${styles.primaryCta}`}
               onMouseMove={handleMagneticMove}
               onMouseLeave={handleMagneticLeave}
             >
               Book a Session
             </a>
-            <a href="#about" className={styles.ghostCta}>
+            <a href="#approach" className={`btn btn-ghost ${styles.ghostCta}`}>
               Learn More
             </a>
           </div>
           <div ref={badgesRef} className={styles.badges}>
-            <span className={styles.badge}>Free consultation</span>
-            <span className={styles.badge}>No commitment</span>
+            <span className={`badge ${styles.badge}`}>Free consultation</span>
+            <span className={`badge ${styles.badge}`}>No commitment</span>
           </div>
         </div>
       </div>

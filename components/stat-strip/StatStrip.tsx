@@ -1,20 +1,7 @@
 "use client";
 
-import { Fraunces, Inter } from "next/font/google";
 import { useEffect, useRef } from "react";
 import styles from "./StatStrip.module.css";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const COUNT_DURATION_MS = 1200;
 const VISIBILITY_RATIO = 0.4;
@@ -120,10 +107,10 @@ const StatStrip = () => {
   return (
     <section
       ref={sectionRef}
-      className={`${styles.section} ${fraunces.variable} ${inter.variable}`}
+      className={styles.section}
       aria-label="Practice statistics"
     >
-      <div className={styles.container}>
+      <div className="container">
         <div className={styles.grid}>
           {STATS.map((stat, index) => (
             <div key={stat.label} className={styles.stat}>

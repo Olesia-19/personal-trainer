@@ -1,24 +1,12 @@
 "use client";
 
-import { Fraunces, Inter } from "next/font/google";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactNode, useEffect, useRef } from "react";
-import styles from "./About.module.css";
+import { useHeaderReveal } from "@/hooks/useHeaderReveal";
+import styles from "./Approach.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const PulseIcon = () => (
   <svg
@@ -120,13 +108,22 @@ const getHeaderClearOffset = () => {
   return headerHeight + HEADER_CLEARANCE_PX;
 };
 
-const About = () => {
+const Approach = () => {
+  const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pinWrapperRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const columnsPinRef = useRef<HTMLDivElement>(null);
   const columnsRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
+  const eyebrowRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useHeaderReveal({
+    triggerRef: sectionRef,
+    eyebrowRef,
+    headingRef,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -388,16 +385,23 @@ const About = () => {
 
   return (
     <section
-      id="about"
-      className={`${styles.section} ${fraunces.variable} ${inter.variable}`}
+      ref={sectionRef}
+      id="approach"
+      className={styles.section}
       aria-labelledby="approach-heading"
     >
-      <div ref={containerRef} className={styles.container}>
-        <div className={styles.sectionGlow} aria-hidden="true" />
+      <div className={styles.sectionGlow} aria-hidden="true" />
+      <div ref={containerRef} className={`container ${styles.container}`}>
         <div ref={pinWrapperRef} className={styles.pinWrapper}>
           <div ref={introRef} className={styles.intro}>
-            <p className={`${styles.eyebrow} ${styles.center}`}>APPROACH</p>
-            <h2 id="approach-heading" className={styles.headline}>
+            <p ref={eyebrowRef} className={`eyebrow ${styles.center}`}>
+              Approach
+            </p>
+            <h2
+              ref={headingRef}
+              id="approach-heading"
+              className={styles.headline}
+            >
               We don&apos;t just change bodies. We change how you live.
             </h2>
           </div>
@@ -415,7 +419,7 @@ const About = () => {
                   ref={(el) => {
                     cardRefs.current[index] = el;
                   }}
-                  className={styles.column}
+                  className={`card ${styles.column}`}
                   role="listitem"
                   data-card-index={index}
                 >
@@ -437,4 +441,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default Approach;

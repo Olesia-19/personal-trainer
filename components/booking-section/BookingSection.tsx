@@ -97,9 +97,9 @@ const BookingSection = () => {
 
   return (
     <section id="book" className={styles.section} aria-labelledby="booking-title">
-      <div className={styles.container}>
+      <div className="container">
         <header className={styles.header}>
-          <p className={styles.eyebrow}>TAILORED TO YOUR SCHEDULE</p>
+          <p className="eyebrow">Tailored to your schedule</p>
           <h2 id="booking-title" className={styles.title}>
             Book Your Assessment
           </h2>
@@ -107,7 +107,7 @@ const BookingSection = () => {
 
         <div className={styles.layout}>
           <div className={styles.leftColumn}>
-            <div className={styles.group}>
+            <div className={`card ${styles.group}`}>
               <p className={styles.groupLabel}>Choose date</p>
               <div className={styles.daysRow} role="radiogroup" aria-label="Select a preferred date">
                 {days.map((day) => {
@@ -127,7 +127,7 @@ const BookingSection = () => {
               </div>
             </div>
 
-            <div className={styles.group}>
+            <div className={`card ${styles.group}`}>
               <p className={styles.groupLabel}>Choose time</p>
               <div className={styles.timesGrid}>
                 {TIMES.map((time) => {
@@ -149,7 +149,7 @@ const BookingSection = () => {
           </div>
 
           <aside className={styles.rightColumn} aria-live="polite">
-            <div className={styles.summaryCard}>
+            <div className={`card ${styles.summaryCard}`}>
               <p className={styles.summaryLabel}>Session Summary</p>
               {hasSelection ? (
                 <p className={styles.summaryText}>
@@ -162,7 +162,7 @@ const BookingSection = () => {
               )}
               <button
                 type="button"
-                className={`${styles.requestButton} ${!hasSelection ? styles.requestButtonDisabled : ""}`}
+                className={`btn btn-primary ${styles.requestButton} ${!hasSelection ? styles.requestButtonDisabled : ""}`}
                 onClick={handleOpenModal}
                 disabled={!hasSelection}
               >
@@ -257,7 +257,7 @@ const BookingSection = () => {
                     required
                   />
 
-                  <button type="submit" className={styles.submitButton}>
+                  <button type="submit" className={`btn btn-primary ${styles.submitButton}`}>
                     Submit Application
                   </button>
                 </form>

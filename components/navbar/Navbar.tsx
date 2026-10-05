@@ -1,17 +1,11 @@
 "use client";
 
-import { Fraunces } from "next/font/google";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces",
-  display: "swap",
-});
-
 const NAV_LINKS = [
-  { label: "Coach", href: "#about" },
+  { label: "Approach", href: "#approach" },
   { label: "Programs", href: "#services" },
   { label: "Results", href: "#services" },
   { label: "FAQ", href: "#book" },
@@ -30,14 +24,11 @@ const Navbar = () => {
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <header
-      className={`${styles.navbar} ${fraunces.variable}`}
-      data-site-header
-    >
-      <div className={styles.inner}>
-        <a href="/" className={styles.logo} onClick={closeMenu}>
+    <header className={styles.navbar} data-site-header>
+      <div className={`container ${styles.inner}`}>
+        <Link href="/" className={styles.logo} onClick={closeMenu}>
           ELITE<span className={styles.logoDot}>.</span>
-        </a>
+        </Link>
 
         <nav className={styles.desktopNav} aria-label="Main navigation">
           <ul className={styles.navList}>
@@ -52,7 +43,11 @@ const Navbar = () => {
         </nav>
 
         <div className={styles.trailing}>
-          <a href="#book" className={styles.cta} onClick={closeMenu}>
+          <a
+            href="#book"
+            className={`btn btn-primary ${styles.cta}`}
+            onClick={closeMenu}
+          >
             Book a session
           </a>
 
@@ -85,7 +80,11 @@ const Navbar = () => {
             </li>
           ))}
           <li>
-            <a href="#book" className={styles.mobileCta} onClick={closeMenu}>
+            <a
+              href="#book"
+              className={`btn btn-primary ${styles.mobileCta}`}
+              onClick={closeMenu}
+            >
               Book a session
             </a>
           </li>
