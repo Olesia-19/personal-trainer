@@ -38,7 +38,8 @@ Type scale:
 
 ## Layout & shape
 --container: 1180px · --gutter: clamp(20px, 5vw, 56px)
---section-pad-y: clamp(72px, 10vw, 140px)
+--section-gap: clamp(88px, 10vw, 144px)
+--section-pad-y: calc(var(--section-gap) / 2)
 --radius-s: 4px · --radius-m: 10px · --radius-l: 22px
 --radius-pill: 999px · --radius-card: 20px
 --btn-h: 3.2rem · --btn-pad-x: 1.8rem · --btn-fs: 0.98rem

@@ -1,13 +1,39 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useHeaderReveal } from "@/hooks/useHeaderReveal";
 import styles from "./BookingSection.module.css";
 
-const TIMES = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "06:30 PM"] as const;
+const TIMES = [
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "02:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+  "06:00 PM",
+  "06:30 PM",
+] as const;
 
 type TimeSlot = (typeof TIMES)[number];
 
+type DayOption = {
+  id: string;
+  weekday: string;
+  day: number;
+  labelLong: string;
+  monthLabel: string;
+};
+
 const BookingSection = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const eyebrowRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const leadRef = useRef<HTMLParagraphElement>(null);
+  const requestButtonRef = useRef<HTMLButtonElement>(null);
+
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,25 +42,53 @@ const BookingSection = () => {
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
 
+  useHeaderReveal({
+    triggerRef: sectionRef,
+    eyebrowRef,
+    headingRef,
+    leadRef,
+  });
+
   const days = useMemo(() => {
-    const result: string[] = [];
+    const result: DayOption[] = [];
 
     for (let i = 0; i < 5; i++) {
       const futureDate = new Date();
+      futureDate.setHours(12, 0, 0, 0);
       futureDate.setDate(futureDate.getDate() + i);
-      result.push(
-        futureDate.toLocaleDateString("en-US", {
-          weekday: "short",
+
+      const year = futureDate.getFullYear();
+      const month = String(futureDate.getMonth() + 1).padStart(2, "0");
+      const dayNum = String(futureDate.getDate()).padStart(2, "0");
+
+      result.push({
+        id: `${year}-${month}-${dayNum}`,
+        weekday: futureDate.toLocaleDateString("en-US", { weekday: "short" }),
+        day: futureDate.getDate(),
+        labelLong: futureDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
           day: "numeric",
         }),
-      );
+        monthLabel: futureDate.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        }),
+      });
     }
 
     return result;
   }, []);
 
-  const handleDateSelect = (day: string) => {
-    setSelectedDate((prev) => (prev === day ? null : day));
+  const monthLabel = days[0]?.monthLabel ?? null;
+
+  const selectedDay = useMemo(
+    () => days.find((day) => day.id === selectedDate) ?? null,
+    [days, selectedDate],
+  );
+
+  const handleDateSelect = (dayId: string) => {
+    setSelectedDate((prev) => (prev === dayId ? null : dayId));
   };
 
   const handleTimeSelect = (time: TimeSlot) => {
@@ -85,6 +139,9 @@ const BookingSection = () => {
       setSelectedTime(null);
     }
     setHasSubmitted(false);
+    requestAnimationFrame(() => {
+      requestButtonRef.current?.focus();
+    });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -95,80 +152,164 @@ const BookingSection = () => {
     setEmail("");
   };
 
+  const summaryDate = selectedDay?.labelLong ?? "Not selected";
+  const summaryTime = selectedTime ?? "Not selected";
+  const hintText = hasSelection
+    ? "Your assessment is ready to request. We'll confirm by invitation."
+    : "Select preferred date and time to review your assessment details.";
+
   return (
-    <section id="book" className={styles.section} aria-labelledby="booking-title">
+    <section
+      ref={sectionRef}
+      id="book"
+      className={styles.section}
+      aria-labelledby="booking-heading"
+    >
       <div className="container">
-        <header className={styles.header}>
-          <p className="eyebrow">Tailored to your schedule</p>
-          <h2 id="booking-title" className={styles.title}>
+        <header className="sectionHeader">
+          <p ref={eyebrowRef} className="eyebrow">
+            Tailored to your schedule
+          </p>
+          <h2
+            ref={headingRef}
+            id="booking-heading"
+            className="sectionTitle"
+          >
             Book Your Assessment
           </h2>
+          <p ref={leadRef} className={`sectionLead ${styles.lead}`}>
+            30 minutes: we&apos;ll talk through your goals, any health
+            considerations, and sketch out a first draft of your program. No
+            obligation either way.
+          </p>
         </header>
 
-        <div className={styles.layout}>
-          <div className={styles.leftColumn}>
-            <div className={`card ${styles.group}`}>
-              <p className={styles.groupLabel}>Choose date</p>
-              <div className={styles.daysRow} role="radiogroup" aria-label="Select a preferred date">
+        <div className={styles.panel}>
+          <div className={styles.pick}>
+            <fieldset className={styles.group}>
+              <div className={styles.groupHead}>
+                <legend className={styles.groupLegend} id="booking-date-legend">
+                  <span className={styles.step} aria-hidden="true">
+                    1
+                  </span>
+                  <span className={styles.groupTitle}>Choose date</span>
+                </legend>
+                {monthLabel ? (
+                  <span className={styles.monthLabel}>{monthLabel}</span>
+                ) : null}
+              </div>
+
+              <div
+                className={styles.dateGrid}
+                role="group"
+                aria-labelledby="booking-date-legend"
+              >
                 {days.map((day) => {
-                  const isActive = selectedDate === day;
+                  const isActive = selectedDate === day.id;
                   return (
                     <button
-                      key={day}
+                      key={day.id}
                       type="button"
-                      className={`${styles.dayButton} ${isActive ? styles.dayButtonActive : ""}`}
-                      onClick={() => handleDateSelect(day)}
+                      className={`${styles.dateChip} ${isActive ? styles.chipActive : ""}`}
+                      onClick={() => handleDateSelect(day.id)}
                       aria-pressed={isActive}
+                      aria-label={day.labelLong}
                     >
-                      {day}
+                      <span className={styles.dateWeekday}>{day.weekday}</span>
+                      <span className={styles.dateDay}>{day.day}</span>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </fieldset>
 
-            <div className={`card ${styles.group}`}>
-              <p className={styles.groupLabel}>Choose time</p>
-              <div className={styles.timesGrid}>
+            <fieldset className={styles.group}>
+              <div className={styles.groupHead}>
+                <legend className={styles.groupLegend} id="booking-time-legend">
+                  <span className={styles.step} aria-hidden="true">
+                    2
+                  </span>
+                  <span className={styles.groupTitle}>Choose time</span>
+                </legend>
+              </div>
+
+              <div
+                className={styles.timeGrid}
+                role="group"
+                aria-labelledby="booking-time-legend"
+              >
                 {TIMES.map((time) => {
                   const isActive = selectedTime === time;
                   return (
                     <button
                       key={time}
                       type="button"
-                      className={`${styles.timeButton} ${isActive ? styles.timeButtonActive : ""}`}
+                      className={`${styles.timeChip} ${isActive ? styles.chipActive : ""}`}
                       onClick={() => handleTimeSelect(time)}
                       aria-pressed={isActive}
+                      aria-label={time}
                     >
                       {time}
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </fieldset>
           </div>
 
-          <aside className={styles.rightColumn} aria-live="polite">
-            <div className={`card ${styles.summaryCard}`}>
-              <p className={styles.summaryLabel}>Session Summary</p>
-              {hasSelection ? (
-                <p className={styles.summaryText}>
-                  Assessment Session • {selectedDate} at {selectedTime}
-                </p>
-              ) : (
-                <p className={styles.summaryPlaceholder}>
-                  Select preferred date and time to review your assessment details.
-                </p>
-              )}
-              <button
-                type="button"
-                className={`btn btn-primary ${styles.requestButton} ${!hasSelection ? styles.requestButtonDisabled : ""}`}
-                onClick={handleOpenModal}
-                disabled={!hasSelection}
-              >
-                Request Invitation
-              </button>
+          <aside className={styles.summary} aria-live="polite">
+            <div className={styles.summaryHead}>
+              <h3 className={styles.summaryTitle}>Session Summary</h3>
+              <span className={styles.durationPill}>30 min</span>
             </div>
+
+            <dl className={styles.summaryRows}>
+              <div className={styles.summaryRow}>
+                <dt>Date</dt>
+                <dd
+                  className={
+                    selectedDay ? styles.summaryValue : styles.summaryEmpty
+                  }
+                >
+                  {summaryDate}
+                </dd>
+              </div>
+              <div className={styles.summaryRow}>
+                <dt>Time</dt>
+                <dd
+                  className={
+                    selectedTime ? styles.summaryValue : styles.summaryEmpty
+                  }
+                >
+                  {summaryTime}
+                </dd>
+              </div>
+              <div className={styles.summaryRow}>
+                <dt>Duration</dt>
+                <dd className={styles.summaryValue}>30 minutes</dd>
+              </div>
+              <div className={styles.summaryRow}>
+                <dt>Cost</dt>
+                <dd className={styles.summaryValue}>Free</dd>
+              </div>
+            </dl>
+
+            <p className={styles.hint}>{hintText}</p>
+
+            <div className={styles.badges}>
+              <span className="badge">Free consultation</span>
+              <span className="badge">No commitment</span>
+            </div>
+
+            <button
+              ref={requestButtonRef}
+              type="button"
+              className={`btn btn-primary ${styles.requestButton} ${!hasSelection ? styles.requestButtonDisabled : ""}`}
+              onClick={handleOpenModal}
+              disabled={!hasSelection}
+            >
+              Request Invitation
+            </button>
           </aside>
         </div>
       </div>
@@ -216,7 +357,8 @@ const BookingSection = () => {
                   Request Invitation
                 </h3>
                 <p className={styles.modalSummary}>
-                  Requesting invitation for: {selectedDate} at {selectedTime}
+                  Requesting invitation for: {selectedDay?.labelLong ?? selectedDate}{" "}
+                  at {selectedTime}
                 </p>
 
                 <form className={styles.modalForm} onSubmit={handleSubmit}>
@@ -232,7 +374,10 @@ const BookingSection = () => {
                     required
                   />
 
-                  <label className={styles.fieldLabel} htmlFor="booking-contact">
+                  <label
+                    className={styles.fieldLabel}
+                    htmlFor="booking-contact"
+                  >
                     Contact (Phone or Telegram handle)
                   </label>
                   <input
@@ -257,7 +402,10 @@ const BookingSection = () => {
                     required
                   />
 
-                  <button type="submit" className={`btn btn-primary ${styles.submitButton}`}>
+                  <button
+                    type="submit"
+                    className={`btn btn-primary ${styles.submitButton}`}
+                  >
                     Submit Application
                   </button>
                 </form>

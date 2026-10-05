@@ -1,5 +1,6 @@
 .section {
   box-sizing: border-box;
+  padding-block: var(--section-pad-y);
   background: var(--bg);
   color: var(--ink);
   border-bottom: 1px solid var(--line);
@@ -17,7 +18,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 1.65rem 1.25rem;
+  padding: 0.35rem 1.25rem;
   min-width: 0;
 }
 
@@ -57,7 +58,7 @@
   }
 
   .stat {
-    padding: 1.35rem 1rem;
+    padding: 0.25rem 1rem;
   }
 
   .stat:not(:first-child) {

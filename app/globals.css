@@ -35,7 +35,8 @@
   --fs-small: 0.88rem;
   --fs-label: 0.78rem;
 
-  --section-pad-y: clamp(72px, 10vw, 140px);
+  --section-gap: clamp(88px, 10vw, 144px);
+  --section-pad-y: calc(var(--section-gap) / 2);
   --container: 1180px;
   --gutter: clamp(20px, 5vw, 56px);
 

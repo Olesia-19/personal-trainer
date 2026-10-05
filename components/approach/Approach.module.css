@@ -7,6 +7,7 @@
   color: var(--ink);
   font-family: var(--font-sans);
   overflow: visible;
+  scroll-margin-top: var(--header-h, 72px);
 }
 
 .container {
@@ -35,7 +36,7 @@
   text-align: center;
   max-width: 34rem;
   margin: 0 auto;
-  padding-bottom: 1.25rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
 }
 
 .center {
@@ -148,7 +149,7 @@
   }
 
   .intro {
-    padding-bottom: 1rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
   }
 
   /* Let absolute cards resolve to .container, not these wrappers */

@@ -1,222 +1,304 @@
 .section {
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-premium: 320ms;
+  --duration-premium: 200ms;
   box-sizing: border-box;
   padding-block: var(--section-pad-y);
   background: var(--bg-deep);
   color: var(--ink);
   font-family: var(--font-sans);
+  scroll-margin-top: var(--header-h, 72px);
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 2.5rem;
+.lead {
+  max-width: 580px;
 }
 
-.title {
-  margin: 0.75rem 0 0;
-  font-family: var(--font-heading);
-  font-size: var(--fs-h2);
-  font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 1.05;
-  color: var(--ink);
-}
-
-.layout {
+.panel {
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1rem, 2.4vw, 1.5rem);
-  align-items: start;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--bg-elev);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.015) 60%
+  );
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
 }
 
-.leftColumn {
-  box-sizing: border-box;
-  display: grid;
-  gap: 1rem;
-  width: 100%;
-  max-width: 100%;
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 3vw, 2.5rem);
   min-width: 0;
 }
 
 .group {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
   min-width: 0;
-  padding: clamp(1rem, 2.3vw, 1.4rem);
-  background: var(--surface);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  overflow-x: hidden;
 }
 
-.groupLabel {
-  margin: 0 0 0.85rem;
-  font-size: var(--fs-small);
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink-muted);
-}
-
-.daysRow {
-  box-sizing: border-box;
+.groupHead {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 0.65rem;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 0.1rem;
-  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.dayButton,
-.timeButton {
+.groupLegend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0;
+  float: none;
+}
+
+.step {
   box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  color: var(--ink);
-  font: inherit;
-  font-size: var(--fs-small);
+  border-radius: 50%;
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: 0;
-  cursor: pointer;
-  transition:
-    background-color var(--duration-premium) var(--ease-premium),
-    border-color var(--duration-premium) var(--ease-premium),
-    color var(--duration-premium) var(--ease-premium),
-    box-shadow var(--duration-premium) var(--ease-premium),
-    transform var(--duration-premium) var(--ease-premium);
+  color: var(--ink-muted);
+  flex-shrink: 0;
 }
 
-.dayButton {
-  flex-shrink: 0;
-  min-height: 2.6rem;
-  padding: 0.65rem 1rem;
+.groupTitle {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.monthLabel {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--ink-faint);
   white-space: nowrap;
 }
 
-.timeButton {
-  display: block;
+.dateGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.timeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.dateChip,
+.timeChip {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 100%;
-  min-height: 2.7rem;
-  padding: 0.7rem 1rem;
+  min-height: 44px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease;
 }
 
-.dayButton:hover,
-.timeButton:hover {
-  border-color: color-mix(in srgb, var(--ink) 20%, transparent);
-  background: var(--surface-hover);
+.dateChip {
+  padding: 1.05rem 0.25rem;
+  gap: 0.35rem;
 }
 
-.dayButton:focus-visible,
-.timeButton:focus-visible,
+.timeChip {
+  min-height: 3.35rem;
+  padding: 0.65rem 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.dateChip:hover,
+.timeChip:hover {
+  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.chipActive,
+.dateChip.chipActive,
+.timeChip.chipActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.chipActive .dateWeekday {
+  color: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+
+.dateChip:focus-visible,
+.timeChip:focus-visible,
 .requestButton:focus-visible,
 .modalClose:focus-visible,
 .fieldInput:focus-visible,
 .submitButton:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--ink) 60%, transparent);
-  outline-offset: 2px;
+  outline: 2px solid rgba(245, 242, 236, 0.7);
+  outline-offset: 3px;
 }
 
-.dayButtonActive,
-.timeButtonActive {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--ink);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+.dateWeekday {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--ink-muted);
+  line-height: 1;
 }
 
-.timesGrid {
+.dateDay {
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.summary {
   box-sizing: border-box;
-  display: grid;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  grid-template-columns: 1fr;
-  grid-auto-flow: row;
-  gap: 0.7rem;
-  max-height: none;
-  overflow-x: hidden;
-  overflow-y: visible;
-  padding-right: 0;
-}
-
-.rightColumn {
-  box-sizing: border-box;
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.summaryCard {
-  box-sizing: border-box;
-  position: static;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: 0.95rem;
-  width: 100%;
-  max-width: 100%;
   min-width: 0;
-  padding: clamp(1.2rem, 2.6vw, 1.6rem);
-  background: var(--surface);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 25px 50px -12px rgba(0, 0, 0, 0.6);
-  overflow-wrap: anywhere;
+  padding: clamp(1.25rem, 2.4vw, 1.9rem);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius-card) - 4px);
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.summaryLabel {
+.summaryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.summaryTitle {
   margin: 0;
-  font-size: var(--fs-small);
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--ink-muted);
-}
-
-.summaryText,
-.summaryPlaceholder {
-  margin: 0;
-  max-width: 100%;
-  font-size: var(--fs-body);
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.summaryText {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--ink);
 }
 
-.summaryPlaceholder {
+.durationPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.7rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-label);
+  font-weight: 500;
   color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.summaryRows {
+  margin: 0;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-small);
+}
+
+.summaryRow:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.summaryRow dt {
+  margin: 0;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+.summaryValue {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 500;
+  text-align: right;
+}
+
+.summaryEmpty {
+  margin: 0;
+  color: var(--ink-faint);
+  font-weight: 400;
+  text-align: right;
+}
+
+.hint {
+  margin: 1rem 0 0;
+  min-height: 2.9em;
+  font-size: var(--fs-small);
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
 }
 
 .requestButton {
-  margin-top: 0.5rem;
   width: 100%;
+  margin-top: 1.25rem;
 }
 
-.requestButtonDisabled {
-  opacity: 0.52;
+.requestButtonDisabled,
+.requestButton:disabled {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--line);
+  color: var(--ink-faint);
   cursor: not-allowed;
   box-shadow: none;
-  pointer-events: none;
 }
 
+.requestButtonDisabled:hover,
+.requestButton:disabled:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--line);
+  color: var(--ink-faint);
+}
+
+/* Modal (unchanged behavior; restyled to tokens) */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -256,7 +338,9 @@
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
-  transition: all var(--duration-premium) var(--ease-premium);
+  transition:
+    background-color var(--duration-premium) var(--ease-premium),
+    color var(--duration-premium) var(--ease-premium);
 }
 
 .modalClose:hover {
@@ -267,8 +351,6 @@
 .modalEyebrow {
   margin: 0;
   font-size: var(--fs-small);
-  letter-spacing: 0;
-  text-transform: none;
   font-weight: 400;
   color: var(--ink-muted);
 }
@@ -300,8 +382,6 @@
   margin: 0.25rem 0 0;
   font-size: var(--fs-label);
   font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
   color: var(--ink-muted);
 }
 
@@ -392,69 +472,56 @@
   }
 }
 
-@media (min-width: 640px) {
-  .timesGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(5, auto);
-    grid-auto-flow: column;
-    max-height: 180px;
-    overflow-y: auto;
-    padding-right: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-  }
-
-  .timesGrid::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  .timesGrid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .timesGrid::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
-    transition: background-color 0.2s ease;
-  }
-
-  .timesGrid::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
-
-  .timeButton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    max-width: none;
-  }
-
-  .modalOverlay {
-    padding: 1rem;
-  }
-
-  .modalCard {
-    border-radius: var(--radius-card);
-    padding: clamp(1.1rem, 3vw, 1.7rem);
-  }
-
-  .requestButton {
-    width: auto;
+@media (min-width: 561px) {
+  .timeGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 900px) {
-  .header {
-    margin-bottom: 3rem;
+@media (min-width: 901px) {
+  .panel {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
   }
 
-  .layout {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+  .summary {
+    align-self: start;
   }
 
-  .summaryCard {
-    position: sticky;
-    top: 100px;
+  .timeGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .dateGrid {
+    gap: 0.4rem;
+  }
+
+  .monthLabel {
+    display: none;
+  }
+
+  .timeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dateChip,
+  .timeChip,
+  .requestButton,
+  .modalClose,
+  .fieldInput,
+  .submitButton {
+    transition: none;
+  }
+
+  .modalOverlay,
+  .modalCard {
+    animation: none;
   }
 }

@@ -4,6 +4,7 @@
   background: var(--bg-deep);
   color: var(--ink);
   font-family: var(--font-sans);
+  scroll-margin-top: var(--header-h, 72px);
 }
 
 .stack {
@@ -29,7 +30,7 @@
 }
 
 .item:last-child {
-  margin-bottom: var(--dwell);
+  margin-bottom: 0;
 }
 
 .card {
@@ -282,7 +283,7 @@
   }
 
   .item:last-child {
-    margin-bottom: var(--dwell-m);
+    margin-bottom: 0;
   }
 
   .card {
