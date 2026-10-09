@@ -4,6 +4,7 @@ import Navbar from "@/components/navbar/Navbar";
 import BookingSection from "@/components/booking-section/BookingSection";
 import TrainingExperiences from "@/components/training-experiences/TrainingExperiences";
 import StatStrip from "@/components/stat-strip/StatStrip";
+import Footer from "@/components/footer/Footer";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <TrainingExperiences />
         <BookingSection />
       </main>
+      <Footer />
     </>
   );
 }
