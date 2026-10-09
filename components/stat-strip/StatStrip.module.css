@@ -1,7 +1,7 @@
 .section {
   box-sizing: border-box;
   padding-block: var(--section-pad-y);
-  background: var(--bg);
+  background: var(--bg-deep);
   color: var(--ink);
   border-bottom: 1px solid var(--line);
   font-family: var(--font-sans);

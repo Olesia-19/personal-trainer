@@ -98,6 +98,8 @@ const CARD_STACK = [
 const PIN_HEIGHT_BUFFER_PX = 40;
 const HEADER_CLEARANCE_PX = 24;
 const CARD_GAP = 24;
+/** How many px earlier than the pin start the cards begin to unfold */
+const EARLY_TRIGGER_PX = 160;
 const EASE_OUT_QUAD = "power2.out";
 const SEPARATE_DURATION = 0.5;
 const SEPARATE_OVERLAP = "-=0.35";
@@ -187,10 +189,11 @@ const Approach = () => {
 
       const parent = (cards[0]?.offsetParent as HTMLElement | null) ?? container;
       const parentRect = parent.getBoundingClientRect();
+      const introGap = parseFloat(getComputedStyle(intro).marginBottom) || 0;
       const top =
         parent === container
-          ? pinWrapper.offsetTop + intro.offsetHeight + 8
-          : intro.offsetHeight + 8;
+          ? pinWrapper.offsetTop + intro.offsetHeight + introGap
+          : intro.offsetHeight + introGap;
 
       const finalLefts = cards.map((card, index) => {
         const finalLeftViewport =
@@ -329,7 +332,7 @@ const Approach = () => {
           SEPARATE_OVERLAP,
         );
 
-        const scrollTrigger = ScrollTrigger.create({
+        const pinTrigger = ScrollTrigger.create({
           trigger: pinWrapper,
           start: () => `top top+=${getHeaderClearOffset()}`,
           end: "+=350",
@@ -339,19 +342,19 @@ const Approach = () => {
           onRefreshInit: () => {
             measureLayout();
           },
-          onEnter: () => {
-            timeline.play();
-          },
-          onEnterBack: () => {
-            timeline.play();
-          },
-          onLeaveBack: () => {
-            timeline.reverse();
-          },
         });
 
-        // If we mount already past the trigger, show the separated row
-        if (scrollTrigger.scroll() >= scrollTrigger.start) {
+        const revealTrigger = ScrollTrigger.create({
+          start: () => pinTrigger.start - EARLY_TRIGGER_PX,
+          end: "max",
+          invalidateOnRefresh: true,
+          onEnter: () => timeline.play(),
+          onEnterBack: () => timeline.play(),
+          onLeaveBack: () => timeline.reverse(),
+        });
+
+        // If we mount already past the reveal trigger, show the separated row
+        if (revealTrigger.scroll() >= revealTrigger.start) {
           timeline.progress(1);
         }
 
@@ -370,7 +373,8 @@ const Approach = () => {
 
         return () => {
           window.removeEventListener("resize", remeasure);
-          scrollTrigger.kill();
+          revealTrigger.kill();
+          pinTrigger.kill();
           timeline.kill();
           clearDesktopLayout();
         };
@@ -402,7 +406,10 @@ const Approach = () => {
               id="approach-heading"
               className={styles.headline}
             >
-              We don&apos;t just change bodies. We change how you live.
+              We don&apos;t just change bodies.{" "}
+              <span className={styles.headlineAccent}>
+                We change how you live.
+              </span>
             </h2>
           </div>
 

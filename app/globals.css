@@ -1,22 +1,36 @@
 @import "../styles/primitives.css";
 
 :root {
-  --bg: #0d0e10;
-  --bg-soft: #16181d;
-  --bg-deep: #07080c;
-  --bg-elev: #1c1e22;
-  --line: rgba(255, 255, 255, 0.08);
-  --ink: #eef1f4;
-  --ink-muted: #9aa3ac;
-  --ink-faint: #6b747c;
-  --accent: #6fa3c7;
-  --accent-soft: rgba(111, 163, 199, 0.14);
-  --accent-text: #a9bfcb;
-  --accent-glow: rgba(111, 163, 199, 0.09);
-  --accent-glow-soft: rgba(111, 163, 199, 0.12);
+  /* Light zone — Bone + copper */
+  --bg-deep: #eeeae3;
+  --bg: #eeeae3;
+  --bg-soft: #dcd4c7;
+  --surface: #f9f7f3;
+  --bg-elev: #f9f7f3;
+  --ink: #1b1815;
+  --ink-muted: #5f574d;
+  --ink-faint: #7a7166;
+  --line: rgba(27, 24, 21, 0.14);
+  --accent: #e0803c;
+  --accent-hover: #d0722f;
+  --on-accent: #1b1815;
+  --accent-ink: #a3501a;
+
+  /* Dark zone — header, hero overlay, footer */
+  --dark-bg: #1b1815;
+  --dark-ink: #eeeae3;
+  --dark-muted: #a79f94;
+  --dark-line: rgba(238, 234, 227, 0.14);
+  --dark-surface-2: #3a3631;
+  --accent-on-dark: #f0a56b;
+
+  /* Legacy aliases retinted for copper */
+  --accent-soft: rgba(224, 128, 60, 0.14);
+  --accent-text: #a3501a;
+  --accent-glow: rgba(224, 128, 60, 0.09);
+  --accent-glow-soft: rgba(224, 128, 60, 0.12);
   --sage: #7c9686;
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-hover: color-mix(in srgb, var(--ink) 4%, var(--surface));
 
   --radius-s: 4px;
   --radius-m: 10px;
@@ -52,7 +66,7 @@
 html {
   height: 100%;
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -60,7 +74,7 @@ body {
   display: flex;
   flex-direction: column;
   color: var(--ink);
-  background: var(--bg);
+  background: var(--bg-deep);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   font-weight: 400;

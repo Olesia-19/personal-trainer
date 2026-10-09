@@ -84,13 +84,13 @@
 .item[data-theme="soft"] .card {
   background: var(--bg-soft);
   color: var(--ink);
-  box-shadow: 0 -28px 56px -18px rgba(0, 0, 0, calc(0.55 * var(--shadow-o)));
+  box-shadow: 0 -28px 56px -18px rgba(27, 24, 21, calc(0.14 * var(--shadow-o)));
 }
 
 .item[data-theme="accent"] .card {
   background: var(--accent);
-  color: var(--bg);
-  box-shadow: 0 -28px 56px -18px rgba(0, 0, 0, calc(0.55 * var(--shadow-o)));
+  color: var(--on-accent);
+  box-shadow: 0 -28px 56px -18px rgba(27, 24, 21, calc(0.14 * var(--shadow-o)));
 }
 
 .item[data-theme="accent"] .card::after {
@@ -101,27 +101,32 @@
 .item[data-theme="accent"] .cardDescription,
 .item[data-theme="accent"] .subtitle,
 .item[data-theme="accent"] .items {
-  color: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: color-mix(in srgb, var(--on-accent) 80%, transparent);
 }
 
 .item[data-theme="accent"] .items li {
-  border-color: color-mix(in srgb, var(--bg) 22%, transparent);
+  border-color: color-mix(in srgb, var(--on-accent) 22%, transparent);
 }
 
 .item[data-theme="accent"] .price {
-  color: var(--bg);
+  color: var(--on-accent);
 }
 
 .item[data-theme="accent"] .applyBtn {
-  background: var(--bg);
-  color: var(--ink);
-  border-color: var(--bg);
+  background: var(--on-accent);
+  color: var(--surface);
+  border-color: var(--on-accent);
 }
 
 .item[data-theme="accent"] .applyBtn:hover {
-  background: color-mix(in srgb, var(--bg) 88%, white);
-  border-color: color-mix(in srgb, var(--bg) 88%, white);
-  color: var(--ink);
+  background: color-mix(in srgb, var(--on-accent) 88%, white);
+  border-color: color-mix(in srgb, var(--on-accent) 88%, white);
+  color: var(--surface);
+}
+
+.item[data-theme="accent"] .mediaPlaceholder {
+  background: color-mix(in srgb, var(--on-accent) 7%, transparent);
+  color: color-mix(in srgb, var(--on-accent) 70%, transparent);
 }
 
 .cardTop {
@@ -177,7 +182,7 @@
   width: 100%;
   height: 100%;
   min-height: 220px;
-  background: color-mix(in srgb, var(--ink) 4%, var(--bg-deep));
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
   color: var(--ink-faint);
   font-size: var(--fs-label);
   font-weight: 500;

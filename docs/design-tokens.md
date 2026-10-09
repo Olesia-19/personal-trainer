@@ -1,26 +1,46 @@
 # Design Tokens
 
-## Colors
---bg: #0d0e10
---bg-soft: #16181d   (mid surface — slightly lifted section beds between --bg and --bg-elev)
---bg-deep: #07080c   (deepest surface — dark section beds below --bg)
---bg-elev: #1c1e22   (elevated panel — cards, surfaces above --bg)
---line: rgba(255,255,255,0.08)
---ink: #eef1f4          (cool off-white)
---ink-muted: #9aa3ac    (cool grey)
---ink-faint: #6b747c    (cool grey)
---accent: #6fa3c7        (cool steel blue — glows, icon strokes, large decorative use)
---accent-soft: rgba(111,163,199,0.14)
---accent-text: #a9bfcb   (desaturated cool silver-blue — for small/bold/caps
-                          text: logo accent dot, small labels.
-                          Deliberately less saturated than --accent so it
-                          reads as premium/metallic rather than a bright
-                          UI-blue badge color.)
---accent-glow: rgba(111,163,199,0.09)
---accent-glow-soft: rgba(111,163,199,0.12)
+## Colors — Bone + copper
+
+Light zone (site canvas between header/hero and footer):
+
+--bg-deep: #EEEAE3   (site canvas, section backgrounds, first stacked card)
+--bg: #EEEAE3        (alias of canvas; do not use for text on accent — use --on-accent)
+--bg-soft: #DCD4C7   (second stacked card / muted sand fills)
+--surface: #F9F7F3   (raised panels: Approach cards, booking panels, inputs, chips)
+--bg-elev: #F9F7F3   (legacy alias of --surface)
+--ink: #1B1815
+--ink-muted: #5F574D
+--ink-faint: #7A7166 (decorative labels only, never essential text)
+--line: rgba(27, 24, 21, 0.14)
+--accent: #E0803C    (fills only: buttons, selected chips, badges, footer square, icon rings)
+--accent-hover: #D0722F
+--on-accent: #1B1815 (text/icons on accent fills)
+--accent-ink: #A3501A (accent-colored text or thin icon strokes on light backgrounds)
+
+Dark zone (header, hero overlay, footer only):
+
+--dark-bg: #1B1815
+--dark-ink: #EEEAE3
+--dark-muted: #A79F94
+--dark-line: rgba(238, 234, 227, 0.14)
+--dark-surface-2: #3A3631   (disabled controls on dark panels)
+--accent-on-dark: #F0A56B    (copper text/tags on dark surfaces)
+
+Legacy aliases (retinted; keep names for existing consumers):
+
+--accent-soft: rgba(224, 128, 60, 0.14)
+--accent-text: #A3501A   (alias of --accent-ink)
+--accent-glow: rgba(224, 128, 60, 0.09)
+--accent-glow-soft: rgba(224, 128, 60, 0.12)
 --sage: #7c9686
---surface: rgba(255,255,255,0.03)
---surface-hover: rgba(255,255,255,0.06)
+--surface-hover: color-mix(in srgb, var(--ink) 4%, var(--surface))
+
+Rules:
+- Accent is a fill color only. Text on accent uses --on-accent.
+- Never use --accent as small text on light backgrounds; use --accent-ink.
+- Shadows use rgba(27, 24, 21, …), not pure black.
+- `color-scheme: light` on the document; theme-color meta is #1B1815.
 
 Defined once in `app/globals.css` under `:root`. Components must consume
 `var(--token)` only — never redeclare these names in CSS Modules.

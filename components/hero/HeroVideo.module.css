@@ -6,7 +6,7 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: var(--bg);
+  background: var(--dark-bg);
 }
 
 .video {
@@ -38,9 +38,9 @@
   z-index: 2;
   background: linear-gradient(
     90deg,
-    rgba(10, 10, 11, 0.92) 0%,
-    rgba(10, 10, 11, 0.68) 32%,
-    rgba(10, 10, 11, 0.15) 58%,
+    rgba(27, 24, 21, 0.92) 0%,
+    rgba(27, 24, 21, 0.68) 32%,
+    rgba(27, 24, 21, 0.15) 58%,
     transparent 100%
   );
 }
@@ -59,7 +59,7 @@
     right: 0;
     bottom: 0;
     height: 4px;
-    background: var(--bg);
+    background: var(--dark-bg);
     z-index: 3;
     pointer-events: none;
   }
@@ -73,8 +73,8 @@
       180deg,
       transparent 0%,
       transparent 50%,
-      var(--bg) 85%,
-      var(--bg) 100%
+      var(--dark-bg) 85%,
+      var(--dark-bg) 100%
     );
     transform: translateZ(0);
   }

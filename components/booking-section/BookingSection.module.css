@@ -21,13 +21,9 @@
   padding: clamp(1.25rem, 3vw, 2.5rem);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
-  background-color: var(--bg-elev);
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.015) 60%
-  );
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  background-color: var(--surface);
+  background-image: none;
+  box-shadow: 0 24px 48px -24px rgba(27, 24, 21, 0.18);
 }
 
 .pick {
@@ -66,11 +62,12 @@
   place-items: center;
   width: 1.55rem;
   height: 1.55rem;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: 50%;
+  background: var(--accent);
   font-size: 0.72rem;
   font-weight: 500;
-  color: var(--ink-muted);
+  color: var(--on-accent);
   flex-shrink: 0;
 }
 
@@ -114,7 +111,7 @@
   margin: 0;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.035);
+  background: #f1eee8;
   color: var(--ink);
   font: inherit;
   cursor: pointer;
@@ -139,8 +136,8 @@
 
 .dateChip:hover,
 .timeChip:hover {
-  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
-  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
 }
 
 .chipActive,
@@ -148,20 +145,24 @@
 .timeChip.chipActive {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
 }
 
 .chipActive .dateWeekday {
-  color: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: color-mix(in srgb, var(--on-accent) 80%, transparent);
 }
 
 .dateChip:focus-visible,
-.timeChip:focus-visible,
+.timeChip:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: 2px;
+}
+
 .requestButton:focus-visible,
 .modalClose:focus-visible,
 .fieldInput:focus-visible,
 .submitButton:focus-visible {
-  outline: 2px solid rgba(245, 242, 236, 0.7);
+  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
   outline-offset: 3px;
 }
 
@@ -187,9 +188,11 @@
   flex-direction: column;
   min-width: 0;
   padding: clamp(1.25rem, 2.4vw, 1.9rem);
-  border: 1px solid var(--line);
+  border: none;
   border-radius: calc(var(--radius-card) - 4px);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--dark-bg);
+  color: var(--dark-ink);
+  box-shadow: none;
 }
 
 .summaryHead {
@@ -207,7 +210,7 @@
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--ink);
+  color: var(--dark-ink);
 }
 
 .durationPill {
@@ -216,11 +219,12 @@
   justify-content: center;
   min-height: 1.7rem;
   padding: 0.2rem 0.7rem;
-  border: 1px solid var(--line);
+  border: none;
   border-radius: var(--radius-pill);
+  background: var(--accent);
   font-size: var(--fs-label);
   font-weight: 500;
-  color: var(--ink-muted);
+  color: var(--on-accent);
   white-space: nowrap;
 }
 
@@ -234,30 +238,30 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.8rem 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--dark-line);
   font-size: var(--fs-small);
 }
 
 .summaryRow:last-child {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--dark-line);
 }
 
 .summaryRow dt {
   margin: 0;
-  color: var(--ink-muted);
+  color: var(--dark-muted);
   font-weight: 400;
 }
 
 .summaryValue {
   margin: 0;
-  color: var(--ink);
+  color: var(--dark-ink);
   font-weight: 500;
   text-align: right;
 }
 
 .summaryEmpty {
   margin: 0;
-  color: var(--ink-faint);
+  color: var(--dark-muted);
   font-weight: 400;
   text-align: right;
 }
@@ -267,7 +271,7 @@
   min-height: 2.9em;
   font-size: var(--fs-small);
   line-height: 1.45;
-  color: var(--ink-muted);
+  color: var(--dark-muted);
 }
 
 .badges {
@@ -277,6 +281,12 @@
   margin-top: 1rem;
 }
 
+.badges :global(.badge) {
+  background: rgba(224, 128, 60, 0.16);
+  color: var(--accent-on-dark);
+  border: 1px solid rgba(224, 128, 60, 0.45);
+}
+
 .requestButton {
   width: 100%;
   margin-top: 1.25rem;
@@ -284,18 +294,18 @@
 
 .requestButtonDisabled,
 .requestButton:disabled {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--line);
-  color: var(--ink-faint);
+  background: var(--dark-surface-2);
+  border-color: var(--dark-surface-2);
+  color: #8c847a;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .requestButtonDisabled:hover,
 .requestButton:disabled:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--line);
-  color: var(--ink-faint);
+  background: var(--dark-surface-2);
+  border-color: var(--dark-surface-2);
+  color: #8c847a;
 }
 
 /* Modal (unchanged behavior; restyled to tokens) */
@@ -306,7 +316,7 @@
   display: grid;
   place-items: center;
   padding: 0.8rem;
-  background: rgba(5, 6, 10, 0.68);
+  background: rgba(27, 24, 21, 0.55);
   backdrop-filter: blur(8px);
   animation: overlayIn 220ms ease-out;
 }
@@ -317,10 +327,8 @@
   width: min(520px, 100%);
   border-radius: var(--radius-card);
   border: 1px solid var(--line);
-  background: var(--bg-elev);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 40px 70px rgba(0, 0, 0, 0.6);
+  background: var(--surface);
+  box-shadow: 0 40px 70px rgba(27, 24, 21, 0.22);
   padding: 1rem;
   animation: modalIn 300ms var(--ease-premium);
 }
@@ -436,9 +444,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
   background: var(--surface-hover);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 10px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 24px rgba(27, 24, 21, 0.14);
   margin-bottom: 0.95rem;
 }
 

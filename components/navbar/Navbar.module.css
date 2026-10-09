@@ -4,13 +4,13 @@
   top: 0;
   z-index: 50;
   padding-top: env(safe-area-inset-top, 0px);
-  color: var(--ink);
+  color: var(--dark-ink);
   font-family: var(--font-sans);
-  background: rgba(10, 10, 11, 0.72);
-  background-color: rgba(10, 10, 11, 0.72);
+  background: rgba(27, 24, 21, 0.94);
+  background-color: rgba(27, 24, 21, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--dark-line);
 }
 
 .inner {
@@ -31,12 +31,12 @@
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--ink);
+  color: var(--dark-ink);
   transition: opacity 220ms ease;
 }
 
 .logoDot {
-  color: var(--accent-text);
+  color: var(--accent);
 }
 
 .logo:hover {
@@ -44,7 +44,7 @@
 }
 
 .logo:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 55%, transparent);
   outline-offset: 4px;
 }
 
@@ -65,17 +65,18 @@
   font-size: 0.9rem;
   font-weight: 400;
   letter-spacing: 0;
-  color: var(--ink-muted);
+  color: color-mix(in srgb, var(--dark-ink) 82%, transparent);
   transition: color 220ms ease;
 }
 
 .navLink:hover,
-.navLink:focus-visible {
-  color: var(--ink);
+.navLink:focus-visible,
+.navLink:active {
+  color: var(--dark-ink);
 }
 
 .navLink:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 55%, transparent);
   outline-offset: 4px;
 }
 
@@ -96,6 +97,12 @@
   font-size: 0.84rem;
 }
 
+.cta:focus-visible,
+.mobileCta:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 70%, transparent);
+  outline-offset: 3px;
+}
+
 .menuToggle {
   display: flex;
   flex-direction: column;
@@ -114,7 +121,7 @@
   width: 1.35rem;
   height: 1px;
   margin-left: auto;
-  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  background: color-mix(in srgb, var(--dark-ink) 88%, transparent);
   transition:
     transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 220ms ease;
@@ -129,7 +136,7 @@
 }
 
 .menuToggle:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 55%, transparent);
   outline-offset: 4px;
 }
 
@@ -142,7 +149,7 @@
   align-items: center;
   justify-content: center;
   padding: 5.5rem 1.5rem 2rem;
-  background: rgba(10, 10, 11, 0.94);
+  background: rgba(27, 24, 21, 0.94);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   opacity: 0;
@@ -172,18 +179,19 @@
   font-size: 1.05rem;
   font-weight: 450;
   letter-spacing: 0;
-  color: var(--ink-muted);
+  color: color-mix(in srgb, var(--dark-ink) 82%, transparent);
   transition: color 220ms ease;
 }
 
 .mobileLink:hover,
-.mobileLink:focus-visible {
-  color: var(--ink);
+.mobileLink:focus-visible,
+.mobileLink:active {
+  color: var(--dark-ink);
 }
 
 .mobileLink:focus-visible,
 .mobileCta:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 55%, transparent);
   outline-offset: 4px;
 }
 

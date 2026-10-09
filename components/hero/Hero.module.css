@@ -6,8 +6,8 @@
   align-items: center;
   box-sizing: border-box;
   min-height: min(90vh, 860px);
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--dark-bg);
+  color: var(--dark-ink);
   font-family: var(--font-sans);
   --hero-dim: 0;
 }
@@ -19,7 +19,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: var(--bg);
+  background: var(--dark-bg);
   opacity: var(--hero-dim, 0);
 }
 
@@ -45,6 +45,14 @@
   transform: translateY(16px);
 }
 
+.eyebrow {
+  color: var(--dark-muted);
+}
+
+.eyebrow::before {
+  background: var(--dark-muted);
+}
+
 .headline {
   position: relative;
   z-index: 1;
@@ -54,7 +62,7 @@
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.035em;
-  color: #f1efe9;
+  color: var(--dark-ink);
 }
 
 .headlineLine {
@@ -73,7 +81,7 @@
 }
 
 .headlineLine:nth-child(2) .headlineLineInner {
-  color: color-mix(in srgb, #f1efe9 45%, transparent);
+  color: color-mix(in srgb, var(--dark-ink) 45%, transparent);
 }
 
 .lead {
@@ -82,7 +90,7 @@
   font-size: clamp(1rem, 1.1vw, 1.05rem);
   font-weight: 400;
   line-height: 1.55;
-  color: var(--ink-muted);
+  color: var(--dark-muted);
 }
 
 .actions {
@@ -98,12 +106,24 @@
   will-change: transform;
 }
 
+.primaryCta:focus-visible,
+.ghostCta:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 70%, transparent);
+  outline-offset: 3px;
+}
+
 .badges {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.55rem;
   margin-top: calc(1.1rem + 8px);
+}
+
+.badge {
+  border-color: var(--dark-line);
+  background: rgba(27, 24, 21, 0.42);
+  color: var(--dark-muted);
 }
 
 @media (min-width: 761px) {
@@ -116,7 +136,7 @@
   .hero {
     min-height: 100svh;
     align-items: flex-start;
-    background: var(--bg);
+    background: var(--dark-bg);
   }
 
   .shell {

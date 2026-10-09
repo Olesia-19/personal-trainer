@@ -1,7 +1,7 @@
 import styles from "./Footer.module.css";
 
 const CONTACT_LINKS = [
-  { label: "+1 (555) 010-0199", href: "tel:+15550100199" },
+  { label: "+1 (000) 000-0000", href: "tel:+10000000000" },
   { label: "hello@elite-demo.com", href: "mailto:hello@elite-demo.com" },
   { label: "@elite.demo", href: "#" },
 ] as const;
