@@ -17,6 +17,11 @@ const TIMES = [
   "06:30 PM",
 ] as const;
 
+/** First bookable day, as an offset from today (1 = tomorrow) */
+const FIRST_BOOKING_DAY_OFFSET = 1;
+/** How many day chips are shown */
+const BOOKING_DAYS_COUNT = 5;
+
 type TimeSlot = (typeof TIMES)[number];
 
 type DayOption = {
@@ -27,6 +32,41 @@ type DayOption = {
   monthLabel: string;
 };
 
+const buildDays = (): DayOption[] => {
+  const result: DayOption[] = [];
+
+  for (
+    let i = FIRST_BOOKING_DAY_OFFSET;
+    i < FIRST_BOOKING_DAY_OFFSET + BOOKING_DAYS_COUNT;
+    i++
+  ) {
+    const futureDate = new Date();
+    futureDate.setHours(12, 0, 0, 0);
+    futureDate.setDate(futureDate.getDate() + i);
+
+    const year = futureDate.getFullYear();
+    const month = String(futureDate.getMonth() + 1).padStart(2, "0");
+    const dayNum = String(futureDate.getDate()).padStart(2, "0");
+
+    result.push({
+      id: `${year}-${month}-${dayNum}`,
+      weekday: futureDate.toLocaleDateString("en-US", { weekday: "short" }),
+      day: futureDate.getDate(),
+      labelLong: futureDate.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+      monthLabel: futureDate.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      }),
+    });
+  }
+
+  return result;
+};
+
 const BookingSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const eyebrowRef = useRef<HTMLParagraphElement>(null);
@@ -34,6 +74,7 @@ const BookingSection = () => {
   const leadRef = useRef<HTMLParagraphElement>(null);
   const requestButtonRef = useRef<HTMLButtonElement>(null);
 
+  const [days, setDays] = useState<DayOption[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,35 +90,8 @@ const BookingSection = () => {
     leadRef,
   });
 
-  const days = useMemo(() => {
-    const result: DayOption[] = [];
-
-    for (let i = 0; i < 5; i++) {
-      const futureDate = new Date();
-      futureDate.setHours(12, 0, 0, 0);
-      futureDate.setDate(futureDate.getDate() + i);
-
-      const year = futureDate.getFullYear();
-      const month = String(futureDate.getMonth() + 1).padStart(2, "0");
-      const dayNum = String(futureDate.getDate()).padStart(2, "0");
-
-      result.push({
-        id: `${year}-${month}-${dayNum}`,
-        weekday: futureDate.toLocaleDateString("en-US", { weekday: "short" }),
-        day: futureDate.getDate(),
-        labelLong: futureDate.toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        }),
-        monthLabel: futureDate.toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        }),
-      });
-    }
-
-    return result;
+  useEffect(() => {
+    setDays(buildDays());
   }, []);
 
   const monthLabel = days[0]?.monthLabel ?? null;
@@ -194,9 +208,9 @@ const BookingSection = () => {
                   </span>
                   <span className={styles.groupTitle}>Choose date</span>
                 </legend>
-                {monthLabel ? (
-                  <span className={styles.monthLabel}>{monthLabel}</span>
-                ) : null}
+                <span className={styles.monthLabel}>
+                  {monthLabel ?? "\u00A0"}
+                </span>
               </div>
 
               <div
@@ -204,22 +218,37 @@ const BookingSection = () => {
                 role="group"
                 aria-labelledby="booking-date-legend"
               >
-                {days.map((day) => {
-                  const isActive = selectedDate === day.id;
-                  return (
-                    <button
-                      key={day.id}
-                      type="button"
-                      className={`${styles.dateChip} ${isActive ? styles.chipActive : ""}`}
-                      onClick={() => handleDateSelect(day.id)}
-                      aria-pressed={isActive}
-                      aria-label={day.labelLong}
-                    >
-                      <span className={styles.dateWeekday}>{day.weekday}</span>
-                      <span className={styles.dateDay}>{day.day}</span>
-                    </button>
-                  );
-                })}
+                {days.length === 0
+                  ? Array.from({ length: BOOKING_DAYS_COUNT }, (_, index) => (
+                      <button
+                        key={`day-placeholder-${index}`}
+                        type="button"
+                        className={styles.dateChip}
+                        disabled
+                        aria-hidden="true"
+                      >
+                        <span className={styles.dateWeekday}>{"\u00A0"}</span>
+                        <span className={styles.dateDay}>{"\u00A0"}</span>
+                      </button>
+                    ))
+                  : days.map((day) => {
+                      const isActive = selectedDate === day.id;
+                      return (
+                        <button
+                          key={day.id}
+                          type="button"
+                          className={`${styles.dateChip} ${isActive ? styles.chipActive : ""}`}
+                          onClick={() => handleDateSelect(day.id)}
+                          aria-pressed={isActive}
+                          aria-label={day.labelLong}
+                        >
+                          <span className={styles.dateWeekday}>
+                            {day.weekday}
+                          </span>
+                          <span className={styles.dateDay}>{day.day}</span>
+                        </button>
+                      );
+                    })}
               </div>
             </fieldset>
 
