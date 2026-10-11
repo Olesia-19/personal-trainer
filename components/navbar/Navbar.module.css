@@ -3,14 +3,24 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  isolation: isolate;
   padding-top: env(safe-area-inset-top, 0px);
   color: var(--dark-ink);
   font-family: var(--font-sans);
+  border-bottom: 1px solid transparent; /* keeps the exact header height */
+}
+
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -1px 0;
+  box-sizing: border-box;
+  z-index: -1;
+  pointer-events: none;
   background: rgba(27, 24, 21, 0.94);
-  background-color: rgba(27, 24, 21, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--dark-line);
+  border-bottom: 1px solid var(--dark-line); /* the visible line is drawn here, over the dark background */
 }
 
 .inner {
@@ -146,9 +156,12 @@
   top: 0;
   z-index: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5.5rem 1.5rem 2rem;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(5.5rem + env(safe-area-inset-top, 0px)) 1.5rem
+    calc(2rem + env(safe-area-inset-bottom, 0px));
   background: rgba(27, 24, 21, 0.94);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -171,6 +184,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1.85rem;
+  margin: auto;
   list-style: none;
   text-align: center;
 }
