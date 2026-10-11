@@ -1,5 +1,6 @@
 .media {
-  --video-focus-x: 78%;
+  --video-focus-x: 90%;
+  --video-focus-y: 0%;
 
   position: absolute;
   inset: 0;
@@ -16,7 +17,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 0%;
+  object-position: var(--video-focus-x) var(--video-focus-y);
   transform-origin: 50% 50%;
   will-change: transform;
 }
@@ -46,9 +47,24 @@
 }
 
 @media (max-width: 760px) {
+  /* Mask melts the last 14px into --dark-bg and clips GPU-layer video bleed.
+     translateZ(0) keeps the will-change video in the same composited layer so the mask sticks. */
   .media {
     inset: 0 0 auto 0;
-    height: 46svh;
+    height: var(--hero-media-h, 46svh);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0,
+      #000 calc(100% - 14px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 0,
+      #000 calc(100% - 14px),
+      transparent 100%
+    );
+    transform: translateZ(0);
   }
 
   /* Cover strip: hides sub-pixel video bleed under the scrim while scaled */
@@ -64,10 +80,6 @@
     pointer-events: none;
   }
 
-  .video {
-    object-position: var(--video-focus-x) 50%;
-  }
-
   .scrim {
     background: linear-gradient(
       180deg,
@@ -77,5 +89,30 @@
       var(--dark-bg) 100%
     );
     transform: translateZ(0);
+  }
+}
+
+/* Mid-mobile: eased fade below the lifter's face (--scrim-clear set in Hero.tsx) */
+@media (min-width: 501px) and (max-width: 760px) {
+  .scrim {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent var(--scrim-clear, 70%),
+      color-mix(in srgb, var(--dark-bg) 18%, transparent)
+        calc(
+          var(--scrim-clear, 70%) + (100% - var(--scrim-clear, 70%)) * 0.25
+        ),
+      color-mix(in srgb, var(--dark-bg) 55%, transparent)
+        calc(
+          var(--scrim-clear, 70%) + (100% - var(--scrim-clear, 70%)) * 0.55
+        ),
+      color-mix(in srgb, var(--dark-bg) 88%, transparent)
+        calc(
+          var(--scrim-clear, 70%) + (100% - var(--scrim-clear, 70%)) * 0.8
+        ),
+      var(--dark-bg) 96%,
+      var(--dark-bg) 100%
+    );
   }
 }

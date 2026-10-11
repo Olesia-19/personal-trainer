@@ -10,6 +10,7 @@
   color: var(--dark-ink);
   font-family: var(--font-sans);
   --hero-dim: 0;
+  --hero-media-h: 46svh;
 }
 
 /* Dim layer above video, below text (.shell z-index: 1) */
@@ -140,7 +141,7 @@
   }
 
   .shell {
-    padding-top: calc(46svh - 1.5rem);
+    padding-top: calc(var(--hero-media-h) - 1.5rem);
     padding-bottom: 56px;
   }
 
@@ -169,6 +170,36 @@
 
   .badges {
     justify-content: center;
+  }
+}
+
+/* Phone strip: integer px height when supported — avoids subpixel GPU video bleed.
+   Keep .shell padding-top as calc(var(--hero-media-h) - 1.5rem) so text does not move. */
+@supports (height: round(1.4px, 1px)) {
+  @media (max-width: 500px) {
+    .hero {
+      --hero-media-h: round(46svh, 1px);
+    }
+  }
+}
+
+/* Mid-mobile strip: keep ~1.70:1 so subjects aren't lost in a wide short crop.
+   Tune the vw term: 55vw ≈ 16:9 full frame, 58.8vw ≈ 1.70:1, 62.5vw ≈ 1.6:1 (more left crop). */
+@media (min-width: 501px) and (max-width: 760px) {
+  .hero {
+    --hero-media-h: min(max(46svh, 58.8vw), 60svh);
+  }
+
+  /* Integer px height when supported — avoids subpixel strip edges under GPU video */
+  @supports (height: round(1.4px, 1px)) {
+    .hero {
+      --hero-media-h: round(min(max(46svh, 58.8vw), 60svh), 1px);
+    }
+  }
+
+  /* Sit the eyebrow on solid dark below the strip (no -1.5rem overlap) */
+  .shell {
+    padding-top: var(--hero-media-h);
   }
 }
 
