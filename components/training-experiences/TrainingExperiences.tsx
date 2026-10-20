@@ -14,6 +14,11 @@ const STRENGTH_VIDEO =
 const STRENGTH_POSTER =
   "https://res.cloudinary.com/dzqk9wipf/video/upload/so_0,q_auto,w_1280/v1792485906/Muscular_arm_pressing_heavy_kett__20261020094227_oueoqi.jpg";
 
+const ATHLETIC_VIDEO =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/q_auto,w_1280/v1792491779/Athlete_running_on_curved_treadmill_20261020112237_lmjezm.mp4";
+const ATHLETIC_POSTER =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/so_0,q_auto,w_1280/v1792491779/Athlete_running_on_curved_treadmill_20261020112237_lmjezm.jpg";
+
 const EXPERIENCES = [
   {
     id: "strength-coaching",
@@ -46,6 +51,8 @@ const EXPERIENCES = [
     ],
     price: "$249 / month",
     theme: "soft",
+    video: ATHLETIC_VIDEO,
+    poster: ATHLETIC_POSTER,
   },
   {
     id: "online-transformation",
@@ -154,16 +161,18 @@ const MOBILE_STACK: StackAnimConfig = {
   revealStagger: 0.06,
 };
 
-type ExperienceMediaProps = {
-  experience: Experience;
+type CardVideoProps = {
+  src: string;
+  poster?: string;
 };
 
-const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
+/** One instance per card video — own ref, observer, and cleanup. */
+const CardVideo = ({ src, poster }: CardVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !experience.video) {
+    if (!video) {
       return;
     }
 
@@ -178,7 +187,16 @@ const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
 
     video.muted = true;
 
+    const card = video.closest("article");
+
+    const cardIsShown = () =>
+      !card || getComputedStyle(card).visibility !== "hidden";
+
     const tryPlay = () => {
+      if (!cardIsShown()) {
+        video.pause();
+        return;
+      }
       video.muted = true;
       const playPromise = video.play();
       if (playPromise !== undefined) {
@@ -188,44 +206,79 @@ const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
       }
     };
 
+    const syncFromEntry = (entry: IntersectionObserverEntry) => {
+      // Observe the media box (not the full sticky li) so a peeking neighbor
+      // does not keep decoding while another card is primary.
+      if (
+        entry.isIntersecting &&
+        entry.intersectionRatio >= 0.35 &&
+        cardIsShown()
+      ) {
+        tryPlay();
+      } else {
+        video.pause();
+      }
+    };
+
+    let lastRatio = 0;
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (!entry) {
           return;
         }
-        if (entry.isIntersecting) {
-          tryPlay();
-        } else {
-          video.pause();
-        }
+        lastRatio = entry.intersectionRatio;
+        syncFromEntry(entry);
       },
-      { threshold: 0.15 },
+      { threshold: [0, 0.15, 0.35, 0.5, 0.75, 1] },
     );
 
     observer.observe(video);
 
+    // GSAP cover toggles visibility — IO may not re-fire; pause/resume accordingly.
+    const mo = card
+      ? new MutationObserver(() => {
+          if (!cardIsShown()) {
+            video.pause();
+          } else if (lastRatio >= 0.35) {
+            tryPlay();
+          }
+        })
+      : null;
+    if (card && mo) {
+      mo.observe(card, { attributes: true, attributeFilter: ["style"] });
+    }
+
     return () => {
       observer.disconnect();
+      mo?.disconnect();
       video.pause();
     };
-  }, [experience.video]);
+  }, [src]);
 
+  return (
+    <video
+      ref={videoRef}
+      className={styles.mediaVideo}
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      aria-hidden="true"
+      tabIndex={-1}
+    />
+  );
+};
+
+type ExperienceMediaProps = {
+  experience: Experience;
+};
+
+const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
   if (experience.video) {
-    return (
-      <video
-        ref={videoRef}
-        className={styles.mediaVideo}
-        src={experience.video}
-        poster={experience.poster}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        tabIndex={-1}
-      />
-    );
+    return <CardVideo src={experience.video} poster={experience.poster} />;
   }
 
   if (experience.image) {
