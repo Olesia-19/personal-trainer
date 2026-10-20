@@ -9,6 +9,11 @@ import styles from "./TrainingExperiences.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const STRENGTH_VIDEO =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/q_auto,w_1280/v1792485906/Muscular_arm_pressing_heavy_kett__20261020094227_oueoqi.mp4";
+const STRENGTH_POSTER =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/so_0,q_auto,w_1280/v1792485906/Muscular_arm_pressing_heavy_kett__20261020094227_oueoqi.jpg";
+
 const EXPERIENCES = [
   {
     id: "strength-coaching",
@@ -24,6 +29,8 @@ const EXPERIENCES = [
     ],
     price: "$199 / month",
     theme: "flat",
+    video: STRENGTH_VIDEO,
+    poster: STRENGTH_POSTER,
   },
   {
     id: "athletic-performance",
@@ -57,7 +64,11 @@ const EXPERIENCES = [
   },
 ] as const;
 
-type Experience = (typeof EXPERIENCES)[number] & { image?: string };
+type Experience = (typeof EXPERIENCES)[number] & {
+  image?: string;
+  video?: string;
+  poster?: string;
+};
 
 const CARD_COUNT = EXPERIENCES.length;
 
@@ -84,7 +95,13 @@ type StackAnimConfig = {
   coverDim: number;
   coverDimSoft: number;
   perspective: number;
+  /** Scrub for covered-card fall-back (unchanged from prior stack). */
   scrub: number;
+  /**
+   * Scrub for media zoom enter — matched to reference (scrub: 1).
+   * Kept separate so cover fall-back timing is not altered.
+   */
+  mediaScrub: number;
   enterStart: string;
   enterEnd: string;
   mediaFromScale: number;
@@ -94,6 +111,12 @@ type StackAnimConfig = {
   revealStagger: number;
 };
 
+/**
+ * Media zoom matched to horeca-social.com "Our SERVICES" (GSAP ScrollTrigger):
+ * frame (.media / [data-gsap-image]) scales 0.3 → 1, origin top-right,
+ * mediaScrub: 1, start "top 80%", end "top 30%", ease none, no opacity change.
+ * Source: cdn.jsdelivr.net/gh/upgreight/horeca-website@v1.11.0/script-min.js
+ */
 const DESKTOP_STACK: StackAnimConfig = {
   coverScale: COVER_SCALE,
   coverRotateX: COVER_ROTATE_X,
@@ -102,15 +125,17 @@ const DESKTOP_STACK: StackAnimConfig = {
   coverDimSoft: COVER_DIM_SOFT,
   perspective: PERSPECTIVE,
   scrub: 0.6,
-  enterStart: "top 90%",
-  enterEnd: "top 40%",
-  mediaFromScale: 0.62,
-  mediaFromOpacity: 0.4,
-  mediaOrigin: "100% 100%",
+  mediaScrub: 1,
+  enterStart: "top 80%",
+  enterEnd: "top 30%",
+  mediaFromScale: 0.3,
+  mediaFromOpacity: 1,
+  mediaOrigin: "100% 0%",
   revealY: 24,
   revealStagger: 0.08,
 };
 
+/** Same media zoom params as desktop; cover fall-back stays mobile-tuned. */
 const MOBILE_STACK: StackAnimConfig = {
   coverScale: M_COVER_SCALE,
   coverRotateX: M_COVER_ROTATE_X,
@@ -119,13 +144,107 @@ const MOBILE_STACK: StackAnimConfig = {
   coverDimSoft: M_COVER_DIM_SOFT,
   perspective: M_PERSPECTIVE,
   scrub: 0.5,
-  enterStart: "top 92%",
-  enterEnd: "top 40%",
-  mediaFromScale: 0.8,
-  mediaFromOpacity: 0.5,
-  mediaOrigin: "50% 100%",
+  mediaScrub: 1,
+  enterStart: "top 80%",
+  enterEnd: "top 30%",
+  mediaFromScale: 0.3,
+  mediaFromOpacity: 1,
+  mediaOrigin: "100% 0%",
   revealY: 16,
   revealStagger: 0.06,
+};
+
+type ExperienceMediaProps = {
+  experience: Experience;
+};
+
+const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !experience.video) {
+      return;
+    }
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reduceMotion) {
+      video.pause();
+      return;
+    }
+
+    video.muted = true;
+
+    const tryPlay = () => {
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          /* Autoplay blocked — leave poster visible. */
+        });
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) {
+          return;
+        }
+        if (entry.isIntersecting) {
+          tryPlay();
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.15 },
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [experience.video]);
+
+  if (experience.video) {
+    return (
+      <video
+        ref={videoRef}
+        className={styles.mediaVideo}
+        src={experience.video}
+        poster={experience.poster}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
+    );
+  }
+
+  if (experience.image) {
+    return (
+      <Image
+        src={experience.image}
+        alt=""
+        fill
+        sizes="(max-width: 760px) 100vw, 58vw"
+        className={styles.mediaImage}
+      />
+    );
+  }
+
+  return (
+    <div className={styles.mediaPlaceholder} aria-hidden="true">
+      <span>image placeholder</span>
+    </div>
+  );
 };
 
 const TrainingExperiences = () => {
@@ -212,7 +331,7 @@ const TrainingExperiences = () => {
               trigger: item,
               start: config.enterStart,
               end: config.enterEnd,
-              scrub: config.scrub,
+              scrub: config.mediaScrub,
               invalidateOnRefresh: true,
             },
           });
@@ -419,19 +538,7 @@ const TrainingExperiences = () => {
                 </div>
 
                 <div className={styles.media}>
-                  {experience.image ? (
-                    <Image
-                      src={experience.image}
-                      alt=""
-                      fill
-                      sizes="(max-width: 760px) 100vw, 58vw"
-                      className={styles.mediaImage}
-                    />
-                  ) : (
-                    <div className={styles.mediaPlaceholder} aria-hidden="true">
-                      <span>image placeholder</span>
-                    </div>
-                  )}
+                  <ExperienceMedia experience={experience} />
                 </div>
               </div>
             </article>
