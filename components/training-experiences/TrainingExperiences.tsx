@@ -19,6 +19,11 @@ const ATHLETIC_VIDEO =
 const ATHLETIC_POSTER =
   "https://res.cloudinary.com/dzqk9wipf/video/upload/so_0,q_auto,w_1280/v1792491779/Athlete_running_on_curved_treadmill_20261020112237_lmjezm.jpg";
 
+const ONLINE_VIDEO =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/q_auto,w_1280/v1792498410/Woman_rising_from_dumbbell_lunge_20261020131256_qyd3ky.mp4";
+const ONLINE_POSTER =
+  "https://res.cloudinary.com/dzqk9wipf/video/upload/so_0,q_auto,w_1280/v1792498410/Woman_rising_from_dumbbell_lunge_20261020131256_qyd3ky.jpg";
+
 const EXPERIENCES = [
   {
     id: "strength-coaching",
@@ -68,13 +73,30 @@ const EXPERIENCES = [
     ],
     price: "$149 / month",
     theme: "accent",
+    video: ONLINE_VIDEO,
+    poster: ONLINE_POSTER,
+    /** Slight top bias so head stays in frame after cover-crop + scale. */
+    objectPosition: "50% 42%",
+    /**
+     * New source has ~2–3px black rows at top/bottom (measured); oversize
+     * inside overflow:hidden so they sit outside the clipped frame.
+     */
+    videoBleed: 4,
+    /** More air around subject — modest zoom inside the clipped frame only. */
+    videoScale: 1.15,
   },
 ] as const;
 
-type Experience = (typeof EXPERIENCES)[number] & {
+type Experience = Omit<
+  (typeof EXPERIENCES)[number],
+  "video" | "poster" | "objectPosition" | "videoBleed" | "videoScale"
+> & {
   image?: string;
   video?: string;
   poster?: string;
+  objectPosition?: string;
+  videoBleed?: number;
+  videoScale?: number;
 };
 
 const CARD_COUNT = EXPERIENCES.length;
@@ -164,10 +186,19 @@ const MOBILE_STACK: StackAnimConfig = {
 type CardVideoProps = {
   src: string;
   poster?: string;
+  objectPosition?: string;
+  videoBleed?: number;
+  videoScale?: number;
 };
 
 /** One instance per card video — own ref, observer, and cleanup. */
-const CardVideo = ({ src, poster }: CardVideoProps) => {
+const CardVideo = ({
+  src,
+  poster,
+  objectPosition,
+  videoBleed,
+  videoScale,
+}: CardVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -256,6 +287,16 @@ const CardVideo = ({ src, poster }: CardVideoProps) => {
     };
   }, [src]);
 
+  const videoStyle = {
+    ...(objectPosition ? { objectPosition } : {}),
+    ...(videoBleed != null && videoBleed > 0
+      ? { ["--video-bleed" as string]: `${videoBleed}px` }
+      : {}),
+    ...(videoScale != null && videoScale !== 1
+      ? { ["--video-scale" as string]: String(videoScale) }
+      : {}),
+  } as CSSProperties;
+
   return (
     <video
       ref={videoRef}
@@ -268,6 +309,7 @@ const CardVideo = ({ src, poster }: CardVideoProps) => {
       preload="metadata"
       aria-hidden="true"
       tabIndex={-1}
+      style={Object.keys(videoStyle).length ? videoStyle : undefined}
     />
   );
 };
@@ -278,7 +320,15 @@ type ExperienceMediaProps = {
 
 const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
   if (experience.video) {
-    return <CardVideo src={experience.video} poster={experience.poster} />;
+    return (
+      <CardVideo
+        src={experience.video}
+        poster={experience.poster}
+        objectPosition={experience.objectPosition}
+        videoBleed={experience.videoBleed}
+        videoScale={experience.videoScale}
+      />
+    );
   }
 
   if (experience.image) {

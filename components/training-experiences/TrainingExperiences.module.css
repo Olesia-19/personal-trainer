@@ -129,6 +129,11 @@
   color: color-mix(in srgb, var(--on-accent) 70%, transparent);
 }
 
+/* Match media pre-frame flash to accent card (avoid ink wash on copper). */
+.item[data-theme="accent"] .media {
+  background: color-mix(in srgb, var(--on-accent) 7%, transparent);
+}
+
 .cardTop {
   position: relative;
   z-index: 1;
@@ -174,13 +179,18 @@
 }
 
 .mediaVideo {
+  --video-bleed: 0px;
+  --video-scale: 1;
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  /* Optional per-card bleed crops source edge bars outside overflow:hidden */
+  inset: calc(-1 * var(--video-bleed));
+  width: calc(100% + 2 * var(--video-bleed));
+  height: calc(100% + 2 * var(--video-bleed));
   object-fit: cover;
+  /* Scale is inside the clipped frame; does not affect .media zoom scrub */
+  transform: translateZ(0) scale(var(--video-scale));
+  transform-origin: 50% 50%;
   /* Avoid WebKit black-frame flicker during card 3D fall-back */
-  transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
