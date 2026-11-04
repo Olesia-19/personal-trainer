@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useHeaderReveal } from "@/hooks/useHeaderReveal";
 import styles from "./BookingSection.module.css";
 
@@ -31,6 +38,8 @@ type DayOption = {
   labelLong: string;
   monthLabel: string;
 };
+
+const subscribeNoop = () => () => {};
 
 const buildDays = (): DayOption[] => {
   const result: DayOption[] = [];
@@ -74,7 +83,6 @@ const BookingSection = () => {
   const leadRef = useRef<HTMLParagraphElement>(null);
   const requestButtonRef = useRef<HTMLButtonElement>(null);
 
-  const [days, setDays] = useState<DayOption[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,9 +98,14 @@ const BookingSection = () => {
     leadRef,
   });
 
-  useEffect(() => {
-    setDays(buildDays());
-  }, []);
+  // Dates depend on the visitor's clock, so build them only after hydration
+  // (server snapshot = false) to avoid a server/client mismatch.
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+  const days = useMemo(() => (isClient ? buildDays() : []), [isClient]);
 
   const monthLabel = days[0]?.monthLabel ?? null;
 

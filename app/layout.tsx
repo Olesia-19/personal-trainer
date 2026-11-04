@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     "elite fitness",
     "bespoke coaching",
   ],
-  themeColor: "#1B1815",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -35,6 +34,10 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1B1815",
 };
 
 export default function RootLayout({
