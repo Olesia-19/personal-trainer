@@ -8,6 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useHeaderReveal } from "@/hooks/useHeaderReveal";
 import styles from "./BookingSection.module.css";
 
@@ -82,6 +83,10 @@ const BookingSection = () => {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const leadRef = useRef<HTMLParagraphElement>(null);
   const requestButtonRef = useRef<HTMLButtonElement>(null);
+  const dateGridRef = useRef<HTMLDivElement>(null);
+  const modalCardRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
@@ -129,26 +134,21 @@ const BookingSection = () => {
       return;
     }
 
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsModalOpen(false);
-        setHasSubmitted(false);
-        if (hasSubmitted) {
-          setSelectedDate(null);
-          setSelectedTime(null);
-        }
-      }
-    };
-
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleEscape);
 
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
     };
-  }, [hasSubmitted, isModalOpen]);
+  }, [isModalOpen]);
+
+  // After a successful submit the form (and its focused button) is replaced
+  // by the success message, so move focus to that message's heading.
+  useEffect(() => {
+    if (hasSubmitted) {
+      successHeadingRef.current?.focus();
+    }
+  }, [hasSubmitted]);
 
   const handleOpenModal = () => {
     if (!hasSelection) {
@@ -160,16 +160,33 @@ const BookingSection = () => {
   };
 
   const handleCloseModal = () => {
+    const wasSubmitted = hasSubmitted;
+
     setIsModalOpen(false);
-    if (hasSubmitted) {
+    if (wasSubmitted) {
       setSelectedDate(null);
       setSelectedTime(null);
     }
     setHasSubmitted(false);
+
+    // Return focus to where the user came from. After a submit the selection
+    // is cleared and "Request Invitation" is disabled, so go to the first date.
     requestAnimationFrame(() => {
-      requestButtonRef.current?.focus();
+      const target = wasSubmitted
+        ? dateGridRef.current?.querySelector<HTMLButtonElement>(
+            "button:not([disabled])",
+          )
+        : requestButtonRef.current;
+      target?.focus();
     });
   };
+
+  useFocusTrap({
+    containerRef: modalCardRef,
+    active: isModalOpen,
+    onEscape: handleCloseModal,
+    initialFocusRef: nameInputRef,
+  });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -227,6 +244,7 @@ const BookingSection = () => {
               </div>
 
               <div
+                ref={dateGridRef}
                 className={styles.dateGrid}
                 role="group"
                 aria-labelledby="booking-date-legend"
@@ -363,6 +381,7 @@ const BookingSection = () => {
           onClick={handleCloseModal}
         >
           <div
+            ref={modalCardRef}
             className={styles.modalCard}
             role="dialog"
             aria-modal="true"
@@ -385,7 +404,12 @@ const BookingSection = () => {
                     <path d="M20 6L9 17L4 12" />
                   </svg>
                 </div>
-                <h3 id="booking-modal-title" className={styles.modalTitle}>
+                <h3
+                  ref={successHeadingRef}
+                  id="booking-modal-title"
+                  className={styles.modalTitle}
+                  tabIndex={-1}
+                >
                   Application Sent.
                 </h3>
                 <p className={styles.modalSummary}>
@@ -408,6 +432,7 @@ const BookingSection = () => {
                     Full Name
                   </label>
                   <input
+                    ref={nameInputRef}
                     id="booking-name"
                     className={styles.fieldInput}
                     value={name}

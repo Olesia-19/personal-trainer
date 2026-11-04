@@ -373,6 +373,11 @@
   color: var(--ink);
 }
 
+/* Success heading receives focus programmatically only (not interactive). */
+.modalTitle[tabindex="-1"]:focus {
+  outline: none;
+}
+
 .modalSummary {
   margin: 0.9rem 0 0;
   font-size: var(--fs-body);
