@@ -158,11 +158,16 @@
   outline-offset: 2px;
 }
 
-.requestButton:focus-visible,
 .modalClose:focus-visible,
 .fieldInput:focus-visible,
 .submitButton:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline-offset: 3px;
+}
+
+/* Sits on the dark summary panel: use the dark-zone ring (as hero/nav CTAs). */
+.requestButton:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--dark-ink) 70%, transparent);
   outline-offset: 3px;
 }
 
@@ -371,6 +376,11 @@
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--ink);
+}
+
+/* Success heading receives focus programmatically only (not interactive). */
+.modalTitle[tabindex="-1"]:focus {
+  outline: none;
 }
 
 .modalSummary {

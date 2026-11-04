@@ -158,7 +158,15 @@ const Hero = () => {
           gsap.set(headlineInners, { y: 0, yPercent: 0, opacity: 1 });
           gsap.set(video, { scale: 1 });
           gsap.set(hero, { "--hero-dim": 0 });
-          return;
+
+          // Freeze the looping background video (it autoplays via the
+          // attribute); resume it if the user switches reduced motion off.
+          video.pause();
+          return () => {
+            video.play().catch(() => {
+              /* Autoplay blocked — leave the current frame. */
+            });
+          };
         }
 
         if (!motion) return;
