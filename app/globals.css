@@ -69,6 +69,12 @@ html {
   color-scheme: light;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   min-height: 100%;
   display: flex;
