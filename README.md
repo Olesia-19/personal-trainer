@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ELITE — Personal Training
 
-## Getting Started
+A premium one-page landing site for a personal trainer, built with Next.js and scroll-driven GSAP animation.
 
-First, run the development server:
+> **Concept demo.** ELITE is not a real trainer or business, and all content is fictional.
+> The booking form is client-side only: it updates local UI state and does not send data anywhere.
+
+**Live demo:** https://personal-trainer-jet-omega.vercel.app
+
+## Tech stack
+
+| Tool | Version |
+| --- | --- |
+| [Next.js](https://nextjs.org) (App Router) | 16.2.4 |
+| React / React DOM | 19.2.4 |
+| TypeScript | ^5 |
+| CSS Modules + global CSS custom properties | — |
+| [GSAP](https://gsap.com) + ScrollTrigger | ^3.15.0 |
+| React Compiler (`babel-plugin-react-compiler`, `reactCompiler: true`) | 1.0.0 |
+| ESLint (`eslint-config-next`) | ^9 / 16.2.4 |
+
+Fonts (Instrument Sans and Inter) are loaded with `next/font/google`.
+
+## Getting started
+
+Requires Node.js and npm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install       # install dependencies
+npm run dev       # dev server at http://localhost:3000
+npm run build     # production build (also runs the type check)
+npm run start     # serve the production build
+npm run lint      # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/         Root layout (fonts, metadata), the page, global tokens (globals.css)
+components/  One folder per section: navbar, hero, stat-strip, approach,
+             training-experiences, booking-section, footer
+             (each with Component.tsx + Component.module.css)
+hooks/       Shared hooks: useHeaderReveal (section header fade-in),
+             useFocusTrap (menu / modal focus handling)
+styles/      primitives.css: global classes (container, eyebrow, btn, card, badge…)
+docs/        design-tokens.md: the design system reference
+public/      Favicons and the hero video (public/videos/hero-barbell.mp4)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The page renders the sections in order: Navbar → Hero → StatStrip → Approach → TrainingExperiences → BookingSection → Footer.
 
-## Learn More
+## Design system
 
-To learn more about Next.js, take a look at the following resources:
+Colors, typography, spacing, radius and motion rules are documented in [`docs/design-tokens.md`](docs/design-tokens.md). Tokens are defined once in `app/globals.css` under `:root` and consumed in CSS Modules through `var(--token)`. No Tailwind.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Media:** the hero video is served locally from `public/videos`. The Training Experiences card videos and their poster frames are hosted on Cloudinary.
+- **Animation:** Hero, Approach and Training Experiences use pinned, scrubbed GSAP ScrollTrigger timelines, enabled only on suitable viewports.
+- **Accessibility:**
+  - `prefers-reduced-motion: reduce` disables the scroll animations and falls back to a static layout; CSS transitions are reduced as well.
+  - The mobile menu and the booking modal trap focus, close on Escape, and move focus back into the page when closed. After a booking submit, focus moves to the success message.
+  - Visible `:focus-visible` styles on interactive elements; semantic sections labelled by their headings; decorative elements hidden from assistive technology.

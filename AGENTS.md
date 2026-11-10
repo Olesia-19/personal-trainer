@@ -16,6 +16,7 @@
 
 - /app — pages
 - /components — reusable UI
+- /hooks — shared React hooks
 - /styles — CSS modules
 
 ## Design Reference
