@@ -14,10 +14,30 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://personal-trainer-jet-omega.vercel.app";
+const SITE_NAME = "Elite Personal Training";
+const TITLE = "Elite Personal Training | Bespoke Fitness & Private Coaching";
+const DESCRIPTION =
+  "Achieve peak physical performance with tailored personal training, private assessment sessions, and elite fitness coaching designed around your schedule.";
+
 export const metadata: Metadata = {
-  title: "Elite Personal Training | Bespoke Fitness & Private Coaching",
-  description:
-    "Achieve peak physical performance with tailored personal training, private assessment sessions, and elite fitness coaching designed around your schedule.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
   keywords: [
     "personal training",
     "private coach",
