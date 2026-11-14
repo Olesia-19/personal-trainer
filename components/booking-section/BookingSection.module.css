@@ -363,6 +363,14 @@
     color var(--duration-premium) var(--ease-premium);
 }
 
+/* Invisible 44px hit area around the 2rem close button. */
+.modalClose::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-pill);
+}
+
 .modalClose:hover {
   background: var(--surface-hover);
   color: var(--ink);

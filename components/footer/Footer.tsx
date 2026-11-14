@@ -3,8 +3,10 @@ import styles from "./Footer.module.css";
 const CONTACT_LINKS = [
   { label: "+1 (000) 000-0000", href: "tel:+10000000000" },
   { label: "hello@elite-demo.com", href: "mailto:hello@elite-demo.com" },
-  { label: "@elite.demo", href: "#" },
 ] as const;
+
+// Fictional social handle: plain text, since there is no real profile to link to.
+const SOCIAL_HANDLE = "@elite.demo";
 
 const NAV_LINKS = [
   { label: "Coach", href: "#approach" },
@@ -30,6 +32,7 @@ const Footer = () => {
                 {label}
               </a>
             ))}
+            <span className={styles.contactText}>{SOCIAL_HANDLE}</span>
           </div>
 
           <nav className={styles.nav} aria-label="Footer">

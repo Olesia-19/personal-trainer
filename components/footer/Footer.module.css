@@ -90,7 +90,8 @@
 }
 
 .link,
-.navLink {
+.navLink,
+.contactText {
   display: block;
   padding-block: 6px;
   color: var(--dark-ink);
@@ -170,6 +171,7 @@
   }
 
   .contacts .link,
+  .contactText,
   .navLink {
     display: block;
     min-height: 0;
