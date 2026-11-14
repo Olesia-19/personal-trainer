@@ -35,6 +35,10 @@ const prefersReducedMotion = () =>
 
 const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
 
+// Only parsed when JavaScript is off: the count-up never runs, so hide the
+// animated "0" and reveal the final value instead.
+const NO_SCRIPT_CSS = `.${styles.animated}{display:none}.${styles.final}{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;clip-path:none}`;
+
 const StatStrip = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const countRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -110,21 +114,32 @@ const StatStrip = () => {
       className={styles.section}
       aria-label="Practice statistics"
     >
+      <noscript>
+        <style>{NO_SCRIPT_CSS}</style>
+      </noscript>
       <div className="container">
         <div className={styles.grid}>
           {STATS.map((stat, index) => (
             <div key={stat.label} className={styles.stat}>
               <b className={styles.value}>
-                <span
-                  ref={(el) => {
-                    countRefs.current[index] = el;
-                  }}
-                  className={styles.count}
-                  data-target={stat.target}
-                >
-                  0
+                {/* Animated count-up: visual only. */}
+                <span className={styles.animated} aria-hidden="true">
+                  <span
+                    ref={(el) => {
+                      countRefs.current[index] = el;
+                    }}
+                    className={styles.count}
+                    data-target={stat.target}
+                  >
+                    0
+                  </span>
+                  {stat.suffix}
                 </span>
-                {stat.suffix}
+                {/* Final value for assistive tech (and shown when JS is off). */}
+                <span className={`visually-hidden ${styles.final}`}>
+                  {stat.target}
+                  {stat.suffix}
+                </span>
               </b>
               <span className={styles.statLabel}>{stat.label}</span>
             </div>
