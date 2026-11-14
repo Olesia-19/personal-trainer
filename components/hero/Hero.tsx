@@ -103,6 +103,60 @@ const getMaxSafeScale = (
   return Math.min(x, y);
 };
 
+/**
+ * Keeps the pinned hero at least as tall as its content (mobile).
+ *
+ * At each refresh ScrollTrigger freezes the hero's height (inline height /
+ * max-height) from one measurement, and .hero clips with overflow: hidden. On
+ * narrow phones the CTA row sits within a pixel of wrapping (it needs ~335.8px
+ * at 375 wide), so a transient layout at that moment can save a height one
+ * row too short and clip the bottom padding. Re-measuring alone can hit the
+ * same transient again, so after each refresh this compares the pinned height
+ * with the content's real height; if the pin is short, it holds the hero open
+ * with min-height (which the next measurement includes) and refreshes once.
+ * The guard is dropped at the start of every other refresh, so it never goes
+ * stale after a resize. Content that changes height later also triggers a refresh.
+ *
+ * Returns a cleanup function.
+ */
+const guardPinHeight = (hero: HTMLElement, shell: HTMLElement) => {
+  let keepGuard = false;
+
+  const onRefreshInit = () => {
+    if (!keepGuard) hero.style.removeProperty("min-height");
+    keepGuard = false;
+  };
+
+  const onRefresh = () => {
+    if (hero.style.minHeight) return; // already corrected in this cycle
+    const contentHeight = Math.ceil(shell.getBoundingClientRect().height);
+    if (hero.getBoundingClientRect().height >= contentHeight - 1) return;
+    hero.style.minHeight = `${contentHeight}px`;
+    keepGuard = true;
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+  };
+
+  let lastContentHeight = shell.offsetHeight;
+  const contentObserver = new ResizeObserver(() => {
+    const height = shell.offsetHeight;
+    if (height === lastContentHeight) return;
+    lastContentHeight = height;
+    ScrollTrigger.refresh();
+  });
+
+  ScrollTrigger.addEventListener("refreshInit", onRefreshInit);
+  ScrollTrigger.addEventListener("refresh", onRefresh);
+  contentObserver.observe(shell);
+  onRefresh(); // the trigger was just created: check its first measurement
+
+  return () => {
+    contentObserver.disconnect();
+    ScrollTrigger.removeEventListener("refreshInit", onRefreshInit);
+    ScrollTrigger.removeEventListener("refresh", onRefresh);
+    hero.style.removeProperty("min-height");
+  };
+};
+
 const Hero = () => {
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -111,6 +165,7 @@ const Hero = () => {
   const leadRef = useRef<HTMLParagraphElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
   const badgesRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -360,12 +415,17 @@ const Hero = () => {
           );
         }
 
+        const shell = shellRef.current;
+        const releasePinHeightGuard =
+          !desktop && shell ? guardPinHeight(hero, shell) : () => {};
+
         const onVideoMeta = () => ScrollTrigger.refresh();
         if (video.readyState < 1) {
           video.addEventListener("loadedmetadata", onVideoMeta, { once: true });
         }
 
         return () => {
+          releasePinHeightGuard();
           video.removeEventListener("loadedmetadata", onVideoMeta);
           video.parentElement?.style.removeProperty("--scrim-clear");
           loadTimeline.kill();
@@ -412,7 +472,7 @@ const Hero = () => {
       aria-labelledby="hero-heading"
     >
       <HeroVideo ref={videoRef} />
-      <div className={`container ${styles.shell}`}>
+      <div ref={shellRef} className={`container ${styles.shell}`}>
         <div className={styles.content}>
           <p ref={eyebrowRef} className={`eyebrow ${styles.eyebrow}`}>
             Elite personal training
