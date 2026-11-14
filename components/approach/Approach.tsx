@@ -417,8 +417,9 @@ const Approach = () => {
             <div
               ref={columnsRef}
               className={styles.columns}
-              role="list"
+              role="region"
               aria-label="Approach pillars"
+              tabIndex={0}
             >
               {APPROACH_COLUMNS.map((column, index) => (
                 <article
@@ -427,7 +428,6 @@ const Approach = () => {
                     cardRefs.current[index] = el;
                   }}
                   className={`card ${styles.column}`}
-                  role="listitem"
                   data-card-index={index}
                 >
                   <span className={styles.cardIndex} aria-hidden="true">
