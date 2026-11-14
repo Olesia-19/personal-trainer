@@ -335,6 +335,13 @@
   background: var(--surface);
   box-shadow: 0 40px 70px rgba(27, 24, 21, 0.22);
   padding: 1rem;
+  /* Scroll inside the card when it doesn't fit (small phones, on-screen
+     keyboard). 1.6rem = the overlay's vertical padding. vh is the fallback
+     for browsers without dvh. */
+  max-height: calc(100vh - 1.6rem);
+  max-height: calc(100dvh - 1.6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: modalIn 300ms var(--ease-premium);
 }
 
