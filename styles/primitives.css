@@ -148,6 +148,40 @@
   border: 0;
 }
 
+/* "Skip to content": off-screen until it receives keyboard focus. */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.2rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 1rem));
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.skip-link:focus-visible {
+  outline: 2px solid var(--dark-ink);
+  outline-offset: 3px;
+}
+
+/* Skip-link target: focusable by script only, so no focus ring. */
+.skip-target:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn,
   .btn-primary,
