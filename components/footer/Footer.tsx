@@ -9,7 +9,6 @@ const CONTACT_LINKS = [
 const NAV_LINKS = [
   { label: "Coach", href: "#approach" },
   { label: "Programs", href: "#services" },
-  { label: "Results", href: "#services" },
   { label: "Book", href: "#book" },
 ] as const;
 
