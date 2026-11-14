@@ -113,7 +113,9 @@
   outline-offset: 3px;
 }
 
+/* Invisible 44px hit area around the 2rem toggle (see .menuToggle::before). */
 .menuToggle {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -143,6 +145,12 @@
 
 .menuToggleOpen .menuBar:last-child {
   transform: translateY(-4px) rotate(-45deg);
+}
+
+.menuToggle::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
 }
 
 .menuToggle:focus-visible {

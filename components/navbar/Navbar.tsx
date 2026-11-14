@@ -11,8 +11,6 @@ const DESKTOP_MEDIA = "(min-width: 860px)";
 const NAV_LINKS = [
   { label: "Approach", href: "#approach" },
   { label: "Programs", href: "#services" },
-  { label: "Results", href: "#services" },
-  { label: "FAQ", href: "#book" },
 ] as const;
 
 const Navbar = () => {

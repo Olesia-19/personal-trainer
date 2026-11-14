@@ -9,8 +9,11 @@ import Footer from "@/components/footer/Footer";
 export default function Home() {
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <Navbar />
-      <main>
+      <main id="main-content" className="skip-target" tabIndex={-1}>
         <Hero />
         <StatStrip />
         <Approach />

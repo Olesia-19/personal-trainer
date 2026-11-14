@@ -230,25 +230,24 @@ const BookingSection = () => {
 
         <div className={styles.panel}>
           <div className={styles.pick}>
-            <fieldset className={styles.group}>
+            <div
+              className={styles.group}
+              role="group"
+              aria-labelledby="booking-date-legend"
+            >
               <div className={styles.groupHead}>
-                <legend className={styles.groupLegend} id="booking-date-legend">
+                <div className={styles.groupLegend} id="booking-date-legend">
                   <span className={styles.step} aria-hidden="true">
                     1
                   </span>
                   <span className={styles.groupTitle}>Choose date</span>
-                </legend>
+                </div>
                 <span className={styles.monthLabel}>
                   {monthLabel ?? "\u00A0"}
                 </span>
               </div>
 
-              <div
-                ref={dateGridRef}
-                className={styles.dateGrid}
-                role="group"
-                aria-labelledby="booking-date-legend"
-              >
+              <div ref={dateGridRef} className={styles.dateGrid}>
                 {days.length === 0
                   ? Array.from({ length: BOOKING_DAYS_COUNT }, (_, index) => (
                       <button
@@ -281,23 +280,23 @@ const BookingSection = () => {
                       );
                     })}
               </div>
-            </fieldset>
+            </div>
 
-            <fieldset className={styles.group}>
+            <div
+              className={styles.group}
+              role="group"
+              aria-labelledby="booking-time-legend"
+            >
               <div className={styles.groupHead}>
-                <legend className={styles.groupLegend} id="booking-time-legend">
+                <div className={styles.groupLegend} id="booking-time-legend">
                   <span className={styles.step} aria-hidden="true">
                     2
                   </span>
                   <span className={styles.groupTitle}>Choose time</span>
-                </legend>
+                </div>
               </div>
 
-              <div
-                className={styles.timeGrid}
-                role="group"
-                aria-labelledby="booking-time-legend"
-              >
+              <div className={styles.timeGrid}>
                 {TIMES.map((time) => {
                   const isActive = selectedTime === time;
                   return (
@@ -307,24 +306,28 @@ const BookingSection = () => {
                       className={`${styles.timeChip} ${isActive ? styles.chipActive : ""}`}
                       onClick={() => handleTimeSelect(time)}
                       aria-pressed={isActive}
-                      aria-label={time}
                     >
                       {time}
                     </button>
                   );
                 })}
               </div>
-            </fieldset>
+            </div>
           </div>
 
-          <aside className={styles.summary} aria-live="polite">
+          <aside className={styles.summary}>
             <div className={styles.summaryHead}>
               <h3 className={styles.summaryTitle}>Session Summary</h3>
               <span className={styles.durationPill}>30 min</span>
             </div>
 
             <dl className={styles.summaryRows}>
-              <div className={styles.summaryRow}>
+              {/* Only the selected date/time rows are announced on change. */}
+              <div
+                className={styles.summaryRow}
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 <dt>Date</dt>
                 <dd
                   className={
@@ -334,7 +337,11 @@ const BookingSection = () => {
                   {summaryDate}
                 </dd>
               </div>
-              <div className={styles.summaryRow}>
+              <div
+                className={styles.summaryRow}
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 <dt>Time</dt>
                 <dd
                   className={

@@ -76,3 +76,9 @@
     transition: none;
   }
 }
+
+/* Hooks for the <noscript> fallback in StatStrip.tsx; no styles of their own. */
+.animated,
+.final {
+  font: inherit;
+}

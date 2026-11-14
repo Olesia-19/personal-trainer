@@ -80,6 +80,12 @@
   display: none;
 }
 
+/* Keyboard users can focus the carousel and scroll it with arrow keys. */
+.columns:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline-offset: 2px;
+}
+
 .column {
   box-sizing: border-box;
   position: relative;
