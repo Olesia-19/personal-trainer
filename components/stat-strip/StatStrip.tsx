@@ -25,7 +25,7 @@ const STATS = [
   {
     target: 45,
     suffix: "+",
-    label: "years — a client age we specialize in",
+    label: "years old — the age group we specialize in",
   },
 ] as const;
 
