@@ -9,7 +9,7 @@ const CONTACT_LINKS = [
 const SOCIAL_HANDLE = "@elite.demo";
 
 const NAV_LINKS = [
-  { label: "Coach", href: "#approach" },
+  { label: "Approach", href: "#approach" },
   { label: "Programs", href: "#services" },
   { label: "Book", href: "#book" },
 ] as const;
