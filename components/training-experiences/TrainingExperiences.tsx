@@ -635,7 +635,7 @@ const TrainingExperiences = () => {
                       href="#book"
                       className={`btn btn-primary ${styles.applyBtn}`}
                     >
-                      Apply Now
+                      Book a Session
                     </a>
                   </div>
                 </div>

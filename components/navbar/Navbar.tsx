@@ -85,7 +85,7 @@ const Navbar = () => {
             className={`btn btn-primary ${styles.cta}`}
             onClick={closeMenu}
           >
-            Book a session
+            Book a Session
           </a>
 
           <button
@@ -128,7 +128,7 @@ const Navbar = () => {
               className={`btn btn-primary ${styles.mobileCta}`}
               onClick={closeMenu}
             >
-              Book a session
+              Book a Session
             </a>
           </li>
         </ul>

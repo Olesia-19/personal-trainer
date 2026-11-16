@@ -170,7 +170,7 @@ const BookingSection = () => {
     setHasSubmitted(false);
 
     // Return focus to where the user came from. After a submit the selection
-    // is cleared and "Request Invitation" is disabled, so go to the first date.
+    // is cleared and "Book a Session" is disabled, so go to the first date.
     requestAnimationFrame(() => {
       const target = wasSubmitted
         ? dateGridRef.current?.querySelector<HTMLButtonElement>(
@@ -199,7 +199,7 @@ const BookingSection = () => {
   const summaryDate = selectedDay?.labelLong ?? "Not selected";
   const summaryTime = selectedTime ?? "Not selected";
   const hintText = hasSelection
-    ? "Your assessment is ready to request. We'll confirm by invitation."
+    ? "Your assessment is ready to request. We'll contact you to confirm."
     : "Select preferred date and time to review your assessment details.";
 
   return (
@@ -375,7 +375,7 @@ const BookingSection = () => {
               onClick={handleOpenModal}
               disabled={!hasSelection}
             >
-              Request Invitation
+              Book a Session
             </button>
           </aside>
         </div>
@@ -399,7 +399,7 @@ const BookingSection = () => {
               type="button"
               className={styles.modalClose}
               onClick={handleCloseModal}
-              aria-label="Close invitation form"
+              aria-label="Close booking form"
             >
               ×
             </button>
@@ -417,7 +417,7 @@ const BookingSection = () => {
                   className={styles.modalTitle}
                   tabIndex={-1}
                 >
-                  Application Sent.
+                  Request Sent.
                 </h3>
                 <p className={styles.modalSummary}>
                   Our team will review your request and contact you shortly.
@@ -427,10 +427,10 @@ const BookingSection = () => {
               <div>
                 <p className={styles.modalEyebrow}>Private Access</p>
                 <h3 id="booking-modal-title" className={styles.modalTitle}>
-                  Request Invitation
+                  Request a Session
                 </h3>
                 <p className={styles.modalSummary}>
-                  Requesting invitation for: {selectedDay?.labelLong ?? selectedDate}{" "}
+                  Requesting a session for: {selectedDay?.labelLong ?? selectedDate}{" "}
                   at {selectedTime}
                 </p>
 
@@ -480,7 +480,7 @@ const BookingSection = () => {
                     type="submit"
                     className={`btn btn-primary ${styles.submitButton}`}
                   >
-                    Submit Application
+                    Book a Session
                   </button>
                 </form>
               </div>
