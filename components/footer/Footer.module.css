@@ -103,6 +103,21 @@
   display: inline-block;
 }
 
+/* Instagram icon + handle inside .contactText; vertical-align: top keeps the
+   row's line box the same height as the other contact rows. */
+.handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  vertical-align: top;
+}
+
+.handleIcon {
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+}
+
 .link:hover,
 .link:focus-visible,
 .navLink:hover,
