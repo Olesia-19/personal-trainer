@@ -2,7 +2,7 @@ import styles from "./Footer.module.css";
 
 const CONTACT_LINKS = [
   { label: "+1 (000) 000-0000", href: "tel:+10000000000" },
-  { label: "hello@elite-demo.com", href: "mailto:hello@elite-demo.com" },
+  { label: "hello@elite-demo.com", href: "mailto:hello@example.com" },
 ] as const;
 
 // Fictional social handle: plain text, since there is no real profile to link to.
@@ -14,7 +14,11 @@ const NAV_LINKS = [
   { label: "Book", href: "#book" },
 ] as const;
 
-const LEGAL_LINES = ["© 2026 ELITE", "Concept demo", "All content is fictional"] as const;
+const LEGAL_LINES = [
+  "© 2026 ELITE",
+  "Concept demo",
+  "All content is fictional",
+] as const;
 
 const Footer = () => {
   return (
