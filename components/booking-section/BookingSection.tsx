@@ -16,13 +16,13 @@ const TIMES = [
   "10:00 AM",
   "11:00 AM",
   "12:00 PM",
-  "01:00 PM",
-  "02:00 PM",
-  "03:00 PM",
-  "04:00 PM",
-  "05:00 PM",
-  "06:00 PM",
-  "06:30 PM",
+  "1:00 PM",
+  "2:00 PM",
+  "3:00 PM",
+  "4:00 PM",
+  "5:00 PM",
+  "6:00 PM",
+  "6:30 PM",
 ] as const;
 
 /** First bookable day, as an offset from today (1 = tomorrow) */
