@@ -226,6 +226,14 @@ const Hero = () => {
 
         if (!motion) return;
 
+        // Has the CSS safety net (Hero.module.css) already revealed the text?
+        // Read it before pinning: moving the hero into the pin-spacer
+        // restarts its CSS animations.
+        const safetyNetFired =
+          eyebrow
+            .getAnimations?.()
+            .some((animation) => animation.playState === "finished") ?? false;
+
         const PIN_RATIO = desktop ? PIN_RATIO_DESKTOP : PIN_RATIO_MOBILE;
 
         const applyScrimClear = (
@@ -296,7 +304,14 @@ const Hero = () => {
         gsap.set(hero, { "--hero-dim": 0 });
 
         // Load-time text reveal — no ScrollTrigger
-        const loadTimeline = gsap.timeline({ delay: 0.1 });
+        const loadTimeline = gsap.timeline({
+          delay: 0.1,
+          // The reveal is running: cancel the CSS safety net so its animation
+          // can never override GSAP's inline styles.
+          onStart: () => {
+            hero.dataset.intro = "";
+          },
+        });
 
         loadTimeline.to(
           eyebrow,
@@ -340,6 +355,14 @@ const Hero = () => {
           { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
           1.75,
         );
+
+        // Scripts arrived after the safety net had already shown the text:
+        // finish the reveal now instead of hiding the text again. This runs
+        // in the same task as the hidden gsap.set above, so nothing flashes.
+        if (safetyNetFired) {
+          loadTimeline.progress(1);
+          hero.dataset.intro = "";
+        }
 
         // Scroll: reverse zoom pinned until the effect finishes (no dead scroll)
         const zoomTimeline = gsap.timeline({
@@ -429,6 +452,7 @@ const Hero = () => {
           video.removeEventListener("loadedmetadata", onVideoMeta);
           video.parentElement?.style.removeProperty("--scrim-clear");
           loadTimeline.kill();
+          delete hero.dataset.intro;
           zoomTimeline.scrollTrigger?.kill();
           zoomTimeline.kill();
           gsap.set(

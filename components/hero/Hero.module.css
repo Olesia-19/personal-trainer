@@ -42,8 +42,43 @@
 .badges {
   position: relative;
   z-index: 1;
-  opacity: 0;
-  transform: translateY(16px);
+}
+
+/* Initial hidden state for the GSAP load reveal (Hero.tsx). Only when scripts
+   can run: with JS off the text shows at once, and browsers that don't know the
+   media feature skip this block, so they show the text until GSAP hides and
+   reveals it (never permanently hidden). */
+@media (scripting: enabled) {
+  .eyebrow,
+  .lead,
+  .actions,
+  .badges {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .headlineLineInner {
+    opacity: 0;
+    transform: translateY(110%);
+  }
+}
+
+/* Safety net: if the load reveal hasn't started 3s after first render (slow or
+   blocked script) or after the hero mounts and is pinned (moving it restarts the
+   clock; covers a GSAP failure), jump to the final state without motion.
+   Hero.tsx sets data-intro on .hero when the reveal starts, which cancels this
+   before it can override GSAP's inline styles. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .hero:not([data-intro]) :is(.eyebrow, .lead, .actions, .badges, .headlineLineInner) {
+    animation: heroIntroFallback 0s 3s forwards;
+  }
+}
+
+@keyframes heroIntroFallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .eyebrow {
@@ -77,8 +112,6 @@
 
 .headlineLineInner {
   display: block;
-  opacity: 0;
-  transform: translateY(110%);
 }
 
 .headlineLine:nth-child(2) .headlineLineInner {
