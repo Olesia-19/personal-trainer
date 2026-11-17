@@ -380,7 +380,9 @@ const Hero = () => {
             end: () => `+=${Math.round(window.innerHeight * PIN_RATIO)}`,
             pin: true,
             pinSpacing: true,
-            anticipatePin: 1,
+            // The pin starts at scrollY 0, so there is nothing to anticipate,
+            // and on iOS the early transform fights momentum / rubber-band.
+            anticipatePin: ios ? 0 : 1,
             scrub: 0.6,
             invalidateOnRefresh: true,
           },
