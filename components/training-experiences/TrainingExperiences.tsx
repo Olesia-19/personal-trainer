@@ -525,6 +525,11 @@ const TrainingExperiences = () => {
           mobileStack:
             "(max-width: 760px) and (min-height: 600px) and (prefers-reduced-motion: no-preference)",
           reduced: "(prefers-reduced-motion: reduce)",
+          // Mirrors the static fallback query in TrainingExperiences.module.css
+          // (short phones / landscape, short desktop). Without it no condition
+          // matches there, and GSAP never calls this function in that state.
+          staticLayout:
+            "(max-width: 760px) and (max-height: 599px), (min-width: 761px) and (max-height: 640px)",
         },
         (context) => {
           const { desktop, mobileStack, reduced } = context.conditions as {
@@ -534,6 +539,23 @@ const TrainingExperiences = () => {
           };
 
           syncHeaderHeight();
+
+          // Static layout (short landscape, short desktop, reduced motion): no
+          // scroll animation runs here. If one ran before (opened in portrait,
+          // then rotated), GSAP's revert writes its start state back inline
+          // (reveals at opacity 0 / hidden, media at scale 0.3), so the cards
+          // showed only their titles. Clear it; a no-op on a fresh load.
+          // ignore(): not recorded, so nothing "reverts" it back later.
+          if (!desktop && !mobileStack) {
+            context.ignore(() => {
+              const animated = items.flatMap((item) => [
+                ...item.querySelectorAll(
+                  `.${styles.card}, .${styles.media}, [data-reveal]`,
+                ),
+              ]);
+              gsap.set(animated, { clearProps: "all" });
+            });
+          }
 
           if (reduced) {
             return;
