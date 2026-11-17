@@ -10,7 +10,11 @@
   color: var(--dark-ink);
   font-family: var(--font-sans);
   --hero-dim: 0;
-  --hero-media-h: 46svh;
+  /* Every svh term below reads var(--hero-svh, 100svh). Unset (Android,
+     desktop) it is plain svh. On iOS WebKit Hero.tsx sets it to px once and
+     only updates it on width changes, because Telegram's web view resizes
+     with its bars and the hero would outgrow its frozen pin placeholder. */
+  --hero-media-h: calc(var(--hero-svh, 100svh) * 0.46);
 }
 
 /* Dim layer above video, below text (.shell z-index: 1) */
@@ -168,7 +172,7 @@
 
 @media (max-width: 760px) {
   .hero {
-    min-height: 100svh;
+    min-height: var(--hero-svh, 100svh);
     align-items: flex-start;
     background: var(--dark-bg);
   }
@@ -211,7 +215,7 @@
 @supports (height: round(1.4px, 1px)) {
   @media (max-width: 500px) {
     .hero {
-      --hero-media-h: round(46svh, 1px);
+      --hero-media-h: round(calc(var(--hero-svh, 100svh) * 0.46), 1px);
     }
   }
 }
@@ -220,13 +224,22 @@
    Tune the vw term: 55vw ≈ 16:9 full frame, 58.8vw ≈ 1.70:1, 62.5vw ≈ 1.6:1 (more left crop). */
 @media (min-width: 501px) and (max-width: 760px) {
   .hero {
-    --hero-media-h: min(max(46svh, 58.8vw), 60svh);
+    --hero-media-h: min(
+      max(calc(var(--hero-svh, 100svh) * 0.46), 58.8vw),
+      calc(var(--hero-svh, 100svh) * 0.6)
+    );
   }
 
   /* Integer px height when supported — avoids subpixel strip edges under GPU video */
   @supports (height: round(1.4px, 1px)) {
     .hero {
-      --hero-media-h: round(min(max(46svh, 58.8vw), 60svh), 1px);
+      --hero-media-h: round(
+        min(
+          max(calc(var(--hero-svh, 100svh) * 0.46), 58.8vw),
+          calc(var(--hero-svh, 100svh) * 0.6)
+        ),
+        1px
+      );
     }
   }
 
