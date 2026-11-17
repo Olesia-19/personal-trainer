@@ -5,6 +5,7 @@ import BookingSection from "@/components/booking-section/BookingSection";
 import TrainingExperiences from "@/components/training-experiences/TrainingExperiences";
 import StatStrip from "@/components/stat-strip/StatStrip";
 import Footer from "@/components/footer/Footer";
+import ScrollDebugOverlay from "@/components/debug/ScrollDebugOverlay";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
         <BookingSection />
       </main>
       <Footer />
+      <ScrollDebugOverlay />
     </>
   );
 }
