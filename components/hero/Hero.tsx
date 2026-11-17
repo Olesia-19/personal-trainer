@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MouseEvent, useEffect, useRef } from "react";
+import { isIOSWebKit } from "@/lib/isIOSWebKit";
 import HeroVideo from "./HeroVideo";
 import styles from "./Hero.module.css";
 
@@ -235,6 +236,7 @@ const Hero = () => {
             .some((animation) => animation.playState === "finished") ?? false;
 
         const PIN_RATIO = desktop ? PIN_RATIO_DESKTOP : PIN_RATIO_MOBILE;
+        const ios = isIOSWebKit();
 
         const applyScrimClear = (
           boxW: number,
@@ -378,7 +380,9 @@ const Hero = () => {
             end: () => `+=${Math.round(window.innerHeight * PIN_RATIO)}`,
             pin: true,
             pinSpacing: true,
-            anticipatePin: 1,
+            // The pin starts at scrollY 0, so there is nothing to anticipate,
+            // and on iOS the early transform fights momentum / rubber-band.
+            anticipatePin: ios ? 0 : 1,
             scrub: 0.6,
             invalidateOnRefresh: true,
           },
@@ -438,6 +442,18 @@ const Hero = () => {
           );
         }
 
+        // iOS: while the bars animate, the fixed hero can briefly stop short of
+        // the viewport bottom and the transparent pin-spacer shows the beige
+        // page. Paint the spacer with the hero's own dark background instead.
+        // GSAP wraps the hero in this spacer when the trigger is created,
+        // reuses it across refreshes and never sets its background.
+        const spacer = hero.parentElement?.classList.contains("pin-spacer")
+          ? hero.parentElement
+          : null;
+        if (ios && spacer) {
+          spacer.style.backgroundColor = "var(--dark-bg)";
+        }
+
         const shell = shellRef.current;
         const releasePinHeightGuard =
           !desktop && shell ? guardPinHeight(hero, shell) : () => {};
@@ -448,6 +464,7 @@ const Hero = () => {
         }
 
         return () => {
+          spacer?.style.removeProperty("background-color");
           releasePinHeightGuard();
           video.removeEventListener("loadedmetadata", onVideoMeta);
           video.parentElement?.style.removeProperty("--scrim-clear");

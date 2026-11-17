@@ -5,6 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { CSSProperties, useEffect, useRef } from "react";
 import { useHeaderReveal } from "@/hooks/useHeaderReveal";
+import { isIOSWebKit } from "@/lib/isIOSWebKit";
 import styles from "./TrainingExperiences.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -544,7 +545,18 @@ const TrainingExperiences = () => {
               readHeaderHeight,
             );
 
+            // iOS WebKit fires resize whenever the browser bars collapse or
+            // expand (height only), often mid-scroll; a forced refresh then
+            // jumps the page and cuts off momentum. There, only refresh when
+            // the width changed (e.g. rotation). Other platforms: unchanged.
+            const ignoreHeightOnlyResize = isIOSWebKit();
+            let lastRefreshWidth = window.innerWidth;
+
             const onResize = () => {
+              if (ignoreHeightOnlyResize) {
+                if (window.innerWidth === lastRefreshWidth) return;
+                lastRefreshWidth = window.innerWidth;
+              }
               syncHeaderHeight();
               ScrollTrigger.refresh();
             };
