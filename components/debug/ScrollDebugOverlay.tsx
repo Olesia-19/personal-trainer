@@ -10,6 +10,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef, useSyncExternalStore } from "react";
+import { getIOSSignals, isIOSWebKit } from "@/lib/isIOSWebKit";
 import styles from "./ScrollDebugOverlay.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -17,28 +18,25 @@ gsap.registerPlugin(ScrollTrigger);
 /** Frame-to-frame scrollY change that counts as a jump */
 const JUMP_PX = 50;
 const MAX_REFRESHES_SHOWN = 5;
-const MAX_JUMPS_SHOWN = 3;
+const MAX_JUMPS_SHOWN = 4;
+/** A jump this soon after a ScrollTrigger refresh is attributed to it */
+const AFTER_REFRESH_MS = 300;
 
 const noopSubscribe = () => () => {};
 const readDebugFlag = () =>
   new URLSearchParams(window.location.search).get("debug") === "1";
 
 type RefreshEntry = { t: number; yBefore: number; yAfter: number; ih: number };
-type JumpEntry = { t: number; from: number; to: number; ih: number };
+type JumpEntry = {
+  t: number;
+  from: number;
+  to: number;
+  ih: number;
+  /** ms since the last refresh, or null when it wasn't within AFTER_REFRESH_MS */
+  afterRefreshMs: number | null;
+};
 
 const seconds = (ms: number) => (ms / 1000).toFixed(2);
-
-/** Each signal reported separately so the real device shows which one matched. */
-const detectIOS = () => {
-  const ua = navigator.userAgent;
-  return {
-    touchCallout:
-      typeof CSS !== "undefined" &&
-      CSS.supports("-webkit-touch-callout", "none"),
-    iDeviceUA: /iP(hone|od|ad)/.test(ua),
-    iPadAsMac: navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1,
-  };
-};
 
 const DebugPanel = () => {
   const outputRef = useRef<HTMLPreElement>(null);
@@ -50,10 +48,15 @@ const DebugPanel = () => {
     const refreshes: RefreshEntry[] = [];
     const jumps: JumpEntry[] = [];
     let refreshCount = 0;
+    let lastRefreshAt = -Infinity;
+    let afterRefreshJumps = 0;
+    let lastInnerHeight = window.innerHeight;
+    let innerHeightChanges = 0;
     let pendingY = 0;
     let lastY = window.scrollY;
     let rafId = 0;
-    const ios = detectIOS();
+    const ios = getIOSSignals();
+    const iosOn = isIOSWebKit();
     const vv = window.visualViewport;
 
     const onRefreshInit = () => {
@@ -61,6 +64,7 @@ const DebugPanel = () => {
     };
     const onRefresh = () => {
       refreshCount += 1;
+      lastRefreshAt = performance.now();
       refreshes.unshift({
         t: performance.now(),
         yBefore: Math.round(pendingY),
@@ -83,34 +87,59 @@ const DebugPanel = () => {
         .join("\n");
     };
 
+    /** Reads the live state of each iOS fix, not just the detection flag. */
+    const describeFixes = () => {
+      const heroTrigger = ScrollTrigger.getAll().find(
+        (trigger) =>
+          (trigger.pin as HTMLElement | undefined)?.getAttribute(
+            "aria-labelledby",
+          ) === "hero-heading",
+      );
+      const heroPin = heroTrigger?.pin as HTMLElement | undefined;
+      const spacerPainted = !!heroPin?.parentElement?.style.backgroundColor;
+      const noAnticipate = heroTrigger ? !heroTrigger.vars.anticipatePin : false;
+      const on = (value: boolean) => (value ? "on" : "off");
+      return `fix A ${on(iosOn)}, B ${on(spacerPainted)}, C ${on(noAnticipate)}`;
+    };
+
     const render = () => {
+      const now = performance.now();
       const y = window.scrollY;
+      if (window.innerHeight !== lastInnerHeight) {
+        innerHeightChanges += 1;
+        lastInnerHeight = window.innerHeight;
+      }
       if (Math.abs(y - lastY) > JUMP_PX) {
+        const sinceRefresh = now - lastRefreshAt;
+        const afterRefresh = sinceRefresh <= AFTER_REFRESH_MS;
+        if (afterRefresh) afterRefreshJumps += 1;
         jumps.unshift({
-          t: performance.now(),
+          t: now,
           from: Math.round(lastY),
           to: Math.round(y),
           ih: window.innerHeight,
+          afterRefreshMs: afterRefresh ? Math.round(sinceRefresh) : null,
         });
         jumps.length = Math.min(jumps.length, MAX_JUMPS_SHOWN);
       }
       lastY = y;
 
       output.textContent = [
-        `t ${seconds(performance.now())}s`,
-        `scrollY ${Math.round(y)}  innerH ${window.innerHeight}`,
+        `t ${seconds(now)}s  ${describeFixes()}`,
+        `scrollY ${Math.round(y)}  innerH ${window.innerHeight} (changed ${innerHeightChanges}x)`,
         `vv.h ${vv ? Math.round(vv.height) : "n/a"}  vv.top ${vv ? Math.round(vv.offsetTop) : "n/a"}`,
         `docH ${document.documentElement.scrollHeight}`,
-        `iOS callout ${ios.touchCallout ? "Y" : "N"} ua ${ios.iDeviceUA ? "Y" : "N"} ipadMac ${ios.iPadAsMac ? "Y" : "N"}  isTouch ${ScrollTrigger.isTouch}`,
+        `iOS ${iosOn ? "YES" : "no"}: callout ${ios.touchCallout ? "Y" : "N"} ua ${ios.iDeviceUA ? "Y" : "N"} ipadMac ${ios.iPadAsMac ? "Y" : "N"}  isTouch ${ScrollTrigger.isTouch}`,
         describePins(),
         `refreshes ${refreshCount}`,
         ...refreshes.map(
           (r) =>
             `  @${seconds(r.t)}s y ${r.yBefore}->${r.yAfter} ih ${r.ih}`,
         ),
-        `jumps>${JUMP_PX}px (frame to frame)`,
+        `jumps>${JUMP_PX}px  after refresh (<=${AFTER_REFRESH_MS}ms): ${afterRefreshJumps}`,
         ...jumps.map(
-          (j) => `  @${seconds(j.t)}s ${j.from}->${j.to} ih ${j.ih}`,
+          (j) =>
+            `  @${seconds(j.t)}s ${j.from}->${j.to} ih ${j.ih} ${j.afterRefreshMs === null ? "flick" : `AFTER REFRESH +${j.afterRefreshMs}ms`}`,
         ),
       ].join("\n");
 
