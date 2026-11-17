@@ -34,6 +34,13 @@ Hero, Approach and TrainingExperiences run pinned/scrubbed scroll timelines; the
 - Tuning values are named constants at the top of each component (e.g. `ZOOM_START`, `CARD_GAP`, `COVER_SCALE`).
 - `hooks/useHeaderReveal.ts` is the shared section-header fade-in (eyebrow / heading / lead refs). Its `MOTION_MEDIA` intentionally duplicates TrainingExperiences' gates — keep them in sync.
 
+### iOS scroll (don't undo)
+
+On iOS WebKit (Safari and Telegram's in-app browser) the toolbars change `innerHeight` and fire `resize` mid-scroll; a forced `ScrollTrigger.refresh()` then makes the page jump or stick. So, gated by `lib/isIOSWebKit.ts` (client-only, call it in effects):
+- App-level `refresh()` calls must not run on height-only resizes there — TrainingExperiences only refreshes on iOS when `innerWidth` changed. Follow the same pattern for any new resize listener.
+- The hero's pin-spacer gets `var(--dark-bg)` so no beige shows while the toolbar animates, and `anticipatePin` is off for the hero.
+- Android Chrome keeps `innerHeight` stable while scrolling, so behavior there (and on desktop) is intentionally unchanged.
+
 ### Media
 
 - Hero video is local: `public/videos/hero-barbell.mp4`.
