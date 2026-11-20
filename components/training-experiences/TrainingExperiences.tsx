@@ -28,51 +28,56 @@ const ONLINE_POSTER =
 const EXPERIENCES = [
   {
     id: "strength-coaching",
-    number: "01",
     title: "Strength Coaching",
     description:
       "Progressive overload, precise form, and programs built for measurable strength gains.",
+    /** Opening clause of the description, set in ink at weight 500 */
+    leadStrong: "Progressive overload, precise form,",
+    /** Accessible name of the modules list (not shown) */
     subtitle: "Program modules",
     items: [
       "Progressive Overload",
       "Precise Form & Technique",
       "Periodized Programming",
     ],
-    price: "$199 / month",
+    price: "$199",
+    pricePeriod: "/ month",
     theme: "flat",
     video: STRENGTH_VIDEO,
     poster: STRENGTH_POSTER,
   },
   {
     id: "athletic-performance",
-    number: "02",
     title: "Athletic Performance",
     description:
       "Speed, power, and agility work tailored to your sport and competition calendar.",
+    leadStrong: "Speed, power, and agility work",
     subtitle: "Performance pillars",
     items: [
       "Speed & Acceleration",
       "Power Development",
       "Sport-Specific Conditioning",
     ],
-    price: "$249 / month",
+    price: "$249",
+    pricePeriod: "/ month",
     theme: "soft",
     video: ATHLETIC_VIDEO,
     poster: ATHLETIC_POSTER,
   },
   {
     id: "online-transformation",
-    number: "03",
     title: "Online Transformation",
     description:
       "Remote coaching with weekly check-ins, custom training, and accountability that scales.",
+    leadStrong: "Remote coaching with weekly check-ins,",
     subtitle: "Remote coaching",
     items: [
       "Custom Training Plans",
       "Weekly Video Check-ins",
       "Nutrition & Habit Tracking",
     ],
-    price: "$149 / month",
+    price: "$149",
+    pricePeriod: "/ month",
     theme: "accent",
     video: ONLINE_VIDEO,
     poster: ONLINE_POSTER,
@@ -348,6 +353,61 @@ const ExperienceMedia = ({ experience }: ExperienceMediaProps) => {
     <div className={styles.mediaPlaceholder} aria-hidden="true">
       <span>image placeholder</span>
     </div>
+  );
+};
+
+const CheckIcon = () => (
+  <svg
+    className={styles.moduleIcon}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M3 8.5 6.4 11.8 13 4.6"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/** Last word of the title takes the card accent (--card-accent). */
+const CardTitle = ({ title }: { title: string }) => {
+  const splitAt = title.lastIndexOf(" ");
+  if (splitAt < 0) {
+    return <h3 className={styles.cardTitle}>{title}</h3>;
+  }
+  return (
+    <h3 className={styles.cardTitle}>
+      {title.slice(0, splitAt)}{" "}
+      <span className={styles.titleAccent}>{title.slice(splitAt + 1)}</span>
+    </h3>
+  );
+};
+
+/** Opening clause (leadStrong) in ink at weight 500, the rest in body grey. */
+const CardDescription = ({
+  description,
+  leadStrong,
+}: {
+  description: string;
+  leadStrong: string;
+}) => {
+  const hasLead = leadStrong !== "" && description.startsWith(leadStrong);
+  return (
+    <p className={styles.cardDescription} data-reveal>
+      {hasLead ? (
+        <>
+          <span className={styles.descriptionLead}>{leadStrong}</span>
+          {description.slice(leadStrong.length)}
+        </>
+      ) : (
+        description
+      )}
+    </p>
   );
 };
 
@@ -646,25 +706,37 @@ const TrainingExperiences = () => {
           >
             <article className={styles.card}>
               <div className={`container ${styles.cardInner}`}>
-                <div className={styles.cardTop}>
-                  <span className={styles.number}>{experience.number}</span>
-                  <h3 className={styles.cardTitle}>{experience.title}</h3>
-                </div>
+                <div className={styles.textCol}>
+                  <div className={styles.cardHeader}>
+                    <CardTitle title={experience.title} />
+                    <CardDescription
+                      description={experience.description}
+                      leadStrong={experience.leadStrong}
+                    />
+                  </div>
 
-                <div className={styles.cardBody}>
-                  <p className={styles.cardDescription} data-reveal>
-                    {experience.description}
-                  </p>
-                  <p className={styles.subtitle} data-reveal>
-                    {experience.subtitle}
-                  </p>
-                  <ul className={styles.items} data-reveal>
+                  <ul
+                    className={styles.modules}
+                    aria-label={experience.subtitle}
+                    data-reveal
+                  >
                     {experience.items.map((item) => (
-                      <li key={item}>{item}</li>
+                      <li key={item} className={styles.module}>
+                        <CheckIcon />
+                        {item}
+                      </li>
                     ))}
                   </ul>
-                  <div className={styles.cardFooter} data-reveal>
-                    <p className={styles.price}>{experience.price}</p>
+
+                  <div className={styles.strip} data-reveal>
+                    <p className={styles.price}>
+                      <span className={styles.priceAmount}>
+                        {experience.price}
+                      </span>{" "}
+                      <span className={styles.pricePeriod}>
+                        {experience.pricePeriod}
+                      </span>
+                    </p>
                     <a
                       href="#book"
                       className={`btn btn-primary ${styles.applyBtn}`}
