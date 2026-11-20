@@ -158,6 +158,50 @@ const guardPinHeight = (hero: HTMLElement, shell: HTMLElement) => {
   };
 };
 
+/**
+ * iOS WebKit only: freezes the hero's svh-based heights (--hero-svh in
+ * Hero.module.css) to px.
+ *
+ * Telegram's in-app browser resizes its web view as its bars move, so svh
+ * changes mid-scroll there. The hero's min-height: 100svh beats the max-height
+ * GSAP froze at the last refresh, so the hero outgrew its pin placeholder and
+ * covered the stats strip. Refreshing on those height-only resizes is not an
+ * option (see CLAUDE.md, iOS scroll), so the height is held instead.
+ *
+ * The value is the real 100svh at mount, measured with a probe. In Safari svh
+ * never changes, so the hero looks exactly as before. It is re-measured only
+ * when the width changed (rotation): on resize, and at refreshInit so it is
+ * always up to date before ScrollTrigger measures the pin.
+ *
+ * Returns a cleanup function.
+ */
+const freezeHeroSvh = (hero: HTMLElement) => {
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none";
+  let frozenWidth = -1;
+
+  const sync = () => {
+    if (window.innerWidth === frozenWidth) return;
+    document.body.appendChild(probe);
+    const svh = probe.getBoundingClientRect().height;
+    probe.remove();
+    if (svh <= 0) return; // no svh support: keep the CSS fallback
+    frozenWidth = window.innerWidth;
+    hero.style.setProperty("--hero-svh", `${svh}px`);
+  };
+
+  sync();
+  window.addEventListener("resize", sync);
+  ScrollTrigger.addEventListener("refreshInit", sync);
+
+  return () => {
+    window.removeEventListener("resize", sync);
+    ScrollTrigger.removeEventListener("refreshInit", sync);
+    hero.style.removeProperty("--hero-svh");
+  };
+};
+
 const Hero = () => {
   const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -190,6 +234,9 @@ const Hero = () => {
     ) {
       return;
     }
+
+    // Before the pin is created, so its first measurement uses frozen heights
+    const releaseSvhFreeze = isIOSWebKit() ? freezeHeroSvh(hero) : () => {};
 
     const mm = gsap.matchMedia();
 
@@ -483,6 +530,7 @@ const Hero = () => {
 
     return () => {
       mm.revert();
+      releaseSvhFreeze();
     };
   }, []);
 

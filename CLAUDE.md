@@ -39,6 +39,7 @@ Hero, Approach and TrainingExperiences run pinned/scrubbed scroll timelines; the
 On iOS WebKit (Safari and Telegram's in-app browser) the toolbars change `innerHeight` and fire `resize` mid-scroll; a forced `ScrollTrigger.refresh()` then makes the page jump or stick. So, gated by `lib/isIOSWebKit.ts` (client-only, call it in effects):
 - App-level `refresh()` calls must not run on height-only resizes there — TrainingExperiences only refreshes on iOS when `innerWidth` changed. Follow the same pattern for any new resize listener.
 - The hero's pin-spacer gets `var(--dark-bg)` so no beige shows while the toolbar animates, and `anticipatePin` is off for the hero.
+- Hero svh heights go through `var(--hero-svh, 100svh)`, frozen to px on iOS (Telegram's web view resizes, so svh moves). Use it for any new svh in the hero.
 - Android Chrome keeps `innerHeight` stable while scrolling, so behavior there (and on desktop) is intentionally unchanged.
 
 ### Media
