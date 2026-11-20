@@ -54,6 +54,10 @@
   --card-body: var(--ink-muted);
   /* Accent for the last title word and the check icons */
   --card-accent: var(--accent-ink);
+  /* Optional underline under the accent word (only where colour alone can't
+     carry the accent) */
+  --card-accent-underline: none;
+  --card-accent-underline-color: transparent;
   --card-rule: var(--line);
   /* Price strip: the card background, 5% toward ink */
   --card-strip: color-mix(in srgb, var(--ink) 5%, var(--bg-deep));
@@ -85,8 +89,9 @@
   --card-strip-muted: color-mix(in srgb, var(--ink-muted) 70%, var(--ink));
 }
 
-/* Orange card: an orange accent would vanish, so text, accent and icons use
-   --on-accent (ink); body text, rule and strip are tints of it. */
+/* Orange card: an orange or cream word would fail contrast on the orange, so
+   the accent word stays ink (--on-accent) and is marked by a thick cream
+   underline instead. Body text, rule and strip are tints of the ink. */
 .item[data-theme="accent"] .card {
   background: var(--accent);
   color: var(--on-accent);
@@ -94,6 +99,8 @@
   --card-ink: var(--on-accent);
   --card-body: color-mix(in srgb, var(--on-accent) 80%, transparent);
   --card-accent: var(--on-accent);
+  --card-accent-underline: underline;
+  --card-accent-underline-color: var(--surface);
   --card-rule: color-mix(in srgb, var(--on-accent) 22%, transparent);
   --card-strip: color-mix(in srgb, var(--on-accent) 8%, var(--accent));
   --card-strip-muted: color-mix(in srgb, var(--on-accent) 90%, transparent);
@@ -167,6 +174,10 @@
 
 .titleAccent {
   color: var(--card-accent);
+  text-decoration-line: var(--card-accent-underline);
+  text-decoration-color: var(--card-accent-underline-color);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
 }
 
 .cardDescription {
@@ -454,11 +465,13 @@
 @media (max-width: 760px) and (max-height: 599px),
   (min-width: 761px) and (max-height: 640px),
   (prefers-reduced-motion: reduce) {
+  /* Cards meet edge to edge: a gap here showed the section background as a
+     beige band between the sand and orange cards */
   .item {
     position: static;
     height: auto;
     min-height: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     z-index: auto;
   }
 
