@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactNode, useEffect, useRef } from "react";
+import { useActiveSlide, useSwipeHint } from "@/hooks/useCarousel";
 import { useHeaderReveal } from "@/hooks/useHeaderReveal";
 import styles from "./Approach.module.css";
 
@@ -65,23 +66,19 @@ const ShieldIcon = () => (
 const APPROACH_COLUMNS: {
   title: string;
   text: string;
-  index: string;
   icon: ReactNode;
 }[] = [
   {
-    index: "01",
     title: "Precision coaching",
     text: "Every session is built on testing, goals, and your current baseline — not a generic plan pulled off the internet. Progress is tracked in numbers, not guesswork.",
     icon: <PulseIcon />,
   },
   {
-    index: "02",
     title: "Nutrition without restriction",
     text: "No crash diets. A flexible eating plan that fits your real life and keeps working through packed weeks, travel, or broken sleep.",
     icon: <ClockIcon />,
   },
   {
-    index: "03",
     title: "Safety first, always",
     text: "Before your first session: a full check on joints, blood pressure, and injury history. Load only increases as fast as your body is ready for it.",
     icon: <ShieldIcon />,
@@ -103,6 +100,10 @@ const EARLY_TRIGGER_PX = 160;
 const EASE_OUT_QUAD = "power2.out";
 const SEPARATE_DURATION = 0.5;
 const SEPARATE_OVERLAP = "-=0.35";
+
+/** Carousel layout (dots + swipe hint) — below the desktop grid breakpoint */
+const CAROUSEL_MEDIA = "(max-width: 800px)";
+const COLUMNS_ID = "approach-pillars";
 
 const getHeaderClearOffset = () => {
   const header = document.querySelector("header");
@@ -126,6 +127,9 @@ const Approach = () => {
     eyebrowRef,
     headingRef,
   });
+
+  const { active, scrollToIndex } = useActiveSlide(columnsRef);
+  useSwipeHint(columnsRef, { media: CAROUSEL_MEDIA });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -416,6 +420,7 @@ const Approach = () => {
           <div ref={columnsPinRef} className={styles.columnsPin}>
             <div
               ref={columnsRef}
+              id={COLUMNS_ID}
               className={styles.columns}
               role="region"
               aria-label="Approach pillars"
@@ -430,15 +435,27 @@ const Approach = () => {
                   className={`card ${styles.column}`}
                   data-card-index={index}
                 >
-                  <span className={styles.cardIndex} aria-hidden="true">
-                    {column.index}
-                  </span>
                   <span className={styles.iconBadge} aria-hidden="true">
                     {column.icon}
                   </span>
                   <h3 className={styles.columnTitle}>{column.title}</h3>
                   <p className={styles.columnText}>{column.text}</p>
                 </article>
+              ))}
+            </div>
+
+            {/* Carousel position (phones only; hidden in the desktop grid) */}
+            <div className={styles.dots}>
+              {APPROACH_COLUMNS.map((column, index) => (
+                <button
+                  key={column.title}
+                  type="button"
+                  className={styles.dot}
+                  aria-label={`Show card ${index + 1} of ${APPROACH_COLUMNS.length}`}
+                  aria-controls={COLUMNS_ID}
+                  aria-current={index === active ? "true" : undefined}
+                  onClick={() => scrollToIndex(index)}
+                />
               ))}
             </div>
           </div>
