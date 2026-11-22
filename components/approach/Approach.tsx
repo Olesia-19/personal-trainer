@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ReactNode, useEffect, useRef } from "react";
+import { useActiveSlide, useSwipeHint } from "@/hooks/useCarousel";
 import { useHeaderReveal } from "@/hooks/useHeaderReveal";
 import styles from "./Approach.module.css";
 
@@ -65,23 +66,19 @@ const ShieldIcon = () => (
 const APPROACH_COLUMNS: {
   title: string;
   text: string;
-  index: string;
   icon: ReactNode;
 }[] = [
   {
-    index: "01",
     title: "Precision coaching",
     text: "Every session is built on testing, goals, and your current baseline — not a generic plan pulled off the internet. Progress is tracked in numbers, not guesswork.",
     icon: <PulseIcon />,
   },
   {
-    index: "02",
     title: "Nutrition without restriction",
     text: "No crash diets. A flexible eating plan that fits your real life and keeps working through packed weeks, travel, or broken sleep.",
     icon: <ClockIcon />,
   },
   {
-    index: "03",
     title: "Safety first, always",
     text: "Before your first session: a full check on joints, blood pressure, and injury history. Load only increases as fast as your body is ready for it.",
     icon: <ShieldIcon />,
@@ -103,6 +100,21 @@ const EARLY_TRIGGER_PX = 160;
 const EASE_OUT_QUAD = "power2.out";
 const SEPARATE_DURATION = 0.5;
 const SEPARATE_OVERLAP = "-=0.35";
+
+/**
+ * Carousel vs pinned grid. The grid needs ~680-760px of height for the
+ * pinned heading + cards, so short viewports (phone landscape) use the
+ * carousel too. 500px sits below every iPad / laptop window (even with iOS
+ * toolbars moving it ~100px) and above every phone in landscape, so the
+ * layout never flips mid-scroll. Keep in sync with the @media queries in
+ * Approach.module.css (same numbers; CSS can't import these).
+ */
+const GRID_MIN_WIDTH = 801;
+const SHORT_MAX_HEIGHT = 500;
+const GRID_MEDIA = `(min-width: ${GRID_MIN_WIDTH}px) and (min-height: ${SHORT_MAX_HEIGHT + 1}px)`;
+/** Exact complement of GRID_MEDIA — dots, swipe hint and leftover cleanup */
+const CAROUSEL_MEDIA = `(max-width: ${GRID_MIN_WIDTH - 1}px), (max-height: ${SHORT_MAX_HEIGHT}px)`;
+const COLUMNS_ID = "approach-pillars";
 
 const getHeaderClearOffset = () => {
   const header = document.querySelector("header");
@@ -126,6 +138,9 @@ const Approach = () => {
     eyebrowRef,
     headingRef,
   });
+
+  const { active, scrollToIndex } = useActiveSlide(columnsRef);
+  useSwipeHint(columnsRef, { media: CAROUSEL_MEDIA });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -253,14 +268,26 @@ const Approach = () => {
 
     mm.add(
       {
-        desktop: "(min-width: 801px) and (prefers-reduced-motion: no-preference)",
-        reduced: "(min-width: 801px) and (prefers-reduced-motion: reduce)",
+        desktop: `${GRID_MEDIA} and (prefers-reduced-motion: no-preference)`,
+        reduced: `${GRID_MEDIA} and (prefers-reduced-motion: reduce)`,
+        // Without it no condition matches in the carousel layout, and GSAP
+        // never calls this function there to clean up.
+        carousel: CAROUSEL_MEDIA,
       },
       (context) => {
-        const { desktop, reduced } = context.conditions as {
+        const { desktop, reduced, carousel } = context.conditions as {
           desktop: boolean;
           reduced: boolean;
+          carousel: boolean;
         };
+
+        // Carousel: no pin. Leaving the grid, GSAP's revert can write the
+        // stacked start state back onto the cards inline; clear it (outside
+        // the recorded context, so nothing reverts the clear later).
+        if (carousel) {
+          context.ignore(clearDesktopLayout);
+          return;
+        }
 
         if (reduced) {
           measureLayout();
@@ -416,6 +443,7 @@ const Approach = () => {
           <div ref={columnsPinRef} className={styles.columnsPin}>
             <div
               ref={columnsRef}
+              id={COLUMNS_ID}
               className={styles.columns}
               role="region"
               aria-label="Approach pillars"
@@ -430,15 +458,27 @@ const Approach = () => {
                   className={`card ${styles.column}`}
                   data-card-index={index}
                 >
-                  <span className={styles.cardIndex} aria-hidden="true">
-                    {column.index}
-                  </span>
                   <span className={styles.iconBadge} aria-hidden="true">
                     {column.icon}
                   </span>
                   <h3 className={styles.columnTitle}>{column.title}</h3>
                   <p className={styles.columnText}>{column.text}</p>
                 </article>
+              ))}
+            </div>
+
+            {/* Carousel position (phones only; hidden in the desktop grid) */}
+            <div className={styles.dots}>
+              {APPROACH_COLUMNS.map((column, index) => (
+                <button
+                  key={column.title}
+                  type="button"
+                  className={styles.dot}
+                  aria-label={`Show card ${index + 1} of ${APPROACH_COLUMNS.length}`}
+                  aria-controls={COLUMNS_ID}
+                  aria-current={index === active ? "true" : undefined}
+                  onClick={() => scrollToIndex(index)}
+                />
               ))}
             </div>
           </div>

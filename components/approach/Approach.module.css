@@ -103,30 +103,30 @@
   box-shadow: 0 10px 24px -14px rgba(27, 24, 21, 0.18);
 }
 
-.cardIndex {
-  display: block;
-  margin: 0 0 0.85rem;
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-faint);
-}
-
+/* Icon circle above the title: soft copper fill, copper ring, copper glyph */
 .iconBadge {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 22px;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 20px;
   border-radius: 50%;
   color: var(--accent-ink);
-  background: transparent;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-glow);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
+.iconBadge svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Two-line minimum so the body text starts on the same line in every card,
+   whether a title wraps ("Nutrition without restriction") or not */
 .columnTitle {
+  min-height: calc(2 * 1.2em);
   margin: 0;
   font-family: var(--font-heading);
   font-size: var(--fs-h3);
@@ -144,7 +144,82 @@
   color: var(--ink-muted);
 }
 
-@media (min-width: 801px) {
+/* Carousel dots: 8px dots 8px apart; the active one is a 24px ink pill.
+   Hit areas are 44px tall and never overlap: each button reaches halfway to
+   its neighbours (4px each side of the dot), and the end buttons extend
+   outward (::after) to 44px wide. With an 8px gap, 44px-wide areas for the
+   middle dots would cover their neighbours and steal their taps. */
+.dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.dot {
+  --dot-w: 8px;
+  position: relative;
+  flex: none;
+  width: calc(var(--dot-w) + 8px);
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: width 200ms ease;
+}
+
+.dot[aria-current="true"] {
+  --dot-w: 24px;
+}
+
+.dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  right: 4px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--line);
+  transform: translateY(-50%);
+  transition: background-color 200ms ease;
+}
+
+.dot[aria-current="true"]::before {
+  background: var(--ink);
+}
+
+.dot:first-child::after,
+.dot:last-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: max(0px, calc(44px - var(--dot-w) - 8px));
+  height: 44px;
+}
+
+.dot:first-child::after {
+  right: 100%;
+}
+
+.dot:last-child::after {
+  left: 100%;
+}
+
+.dot:focus-visible {
+  outline: none;
+}
+
+.dot:focus-visible::before {
+  outline: 2px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  outline-offset: 3px;
+}
+
+/* Pinned grid. Below this (narrow OR short, e.g. phone landscape) the cards
+   stay a carousel. Same numbers as GRID_MIN_WIDTH / SHORT_MAX_HEIGHT in
+   Approach.tsx — keep them in sync. */
+@media (min-width: 801px) and (min-height: 501px) {
   .section {
     overflow-x: clip;
   }
@@ -183,9 +258,84 @@
     width: auto;
     min-width: 0;
     max-width: none;
+    padding: 32px;
+    border-radius: 28px;
     scroll-snap-align: unset;
     transform-origin: center center;
     box-shadow: 0 10px 24px -14px rgba(27, 24, 21, 0.18);
+  }
+
+  .iconBadge {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 28px;
+  }
+
+  .iconBadge svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .columnTitle {
+    font-size: 1.625rem;
+    letter-spacing: -0.01em;
+  }
+
+  .columnText {
+    margin-top: 14px;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Grid layout: no carousel, so no dots */
+  .dots {
+    display: none;
+  }
+}
+
+/* Narrow grid (801-1023px): "Nutrition without restriction" wraps to three
+   lines at 26px, so reserve three lines to keep the bodies aligned */
+@media (min-width: 801px) and (max-width: 1023px) and (min-height: 501px) {
+  .columnTitle {
+    min-height: calc(3 * 1.2em);
+  }
+}
+
+/* Short-landscape carousel (max-height = SHORT_MAX_HEIGHT in Approach.tsx):
+   tighten inside the card so one card + the dots fit under the header.
+   Cards here are >= 456px wide inside, so every title is one line and one
+   reserved line keeps the bodies aligned. Card size and padding unchanged. */
+@media (max-height: 500px) {
+  /* Short windows wider than ~1240px: the container caps at 1180px, so 85vw
+     would be wider than the scroller. Never wider than the scroller minus a
+     peek; on every phone 85vw is the smaller value, so phones are unchanged. */
+  .column {
+    width: min(85vw, calc(100% - 24px));
+    min-width: 0;
+  }
+
+  .iconBadge {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+  }
+
+  .iconBadge svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .columnTitle {
+    min-height: 1.2em;
+  }
+
+  .columnText {
+    margin-top: 8px;
+    font-size: 0.9375rem;
+  }
+
+  .dots {
+    margin-top: 0;
   }
 
   .column:nth-child(1) {
@@ -204,5 +354,10 @@
 @media (prefers-reduced-motion: reduce) {
   .column {
     opacity: 1;
+  }
+
+  .dot,
+  .dot::before {
+    transition: none;
   }
 }
