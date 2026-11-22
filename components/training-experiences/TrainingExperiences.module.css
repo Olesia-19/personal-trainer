@@ -90,8 +90,8 @@
 }
 
 /* Orange card: an orange or cream word would fail contrast on the orange, so
-   the accent word stays ink (--on-accent) and is marked by a thick cream
-   underline instead. Body text, rule and strip are tints of the ink. */
+   the accent word stays ink (--on-accent), same as the rest of the title.
+   Body text, rule and strip are tints of the ink. */
 .item[data-theme="accent"] .card {
   background: var(--accent);
   color: var(--on-accent);
@@ -99,8 +99,6 @@
   --card-ink: var(--on-accent);
   --card-body: color-mix(in srgb, var(--on-accent) 80%, transparent);
   --card-accent: var(--on-accent);
-  --card-accent-underline: underline;
-  --card-accent-underline-color: var(--surface);
   --card-rule: color-mix(in srgb, var(--on-accent) 22%, transparent);
   --card-strip: color-mix(in srgb, var(--on-accent) 8%, var(--accent));
   --card-strip-muted: color-mix(in srgb, var(--on-accent) 90%, transparent);
