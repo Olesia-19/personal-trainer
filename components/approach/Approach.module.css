@@ -216,7 +216,10 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 801px) {
+/* Pinned grid. Below this (narrow OR short, e.g. phone landscape) the cards
+   stay a carousel. Same numbers as GRID_MIN_WIDTH / SHORT_MAX_HEIGHT in
+   Approach.tsx — keep them in sync. */
+@media (min-width: 801px) and (min-height: 501px) {
   .section {
     overflow-x: clip;
   }
@@ -292,9 +295,47 @@
 
 /* Narrow grid (801-1023px): "Nutrition without restriction" wraps to three
    lines at 26px, so reserve three lines to keep the bodies aligned */
-@media (min-width: 801px) and (max-width: 1023px) {
+@media (min-width: 801px) and (max-width: 1023px) and (min-height: 501px) {
   .columnTitle {
     min-height: calc(3 * 1.2em);
+  }
+}
+
+/* Short-landscape carousel (max-height = SHORT_MAX_HEIGHT in Approach.tsx):
+   tighten inside the card so one card + the dots fit under the header.
+   Cards here are >= 456px wide inside, so every title is one line and one
+   reserved line keeps the bodies aligned. Card size and padding unchanged. */
+@media (max-height: 500px) {
+  /* Short windows wider than ~1240px: the container caps at 1180px, so 85vw
+     would be wider than the scroller. Never wider than the scroller minus a
+     peek; on every phone 85vw is the smaller value, so phones are unchanged. */
+  .column {
+    width: min(85vw, calc(100% - 24px));
+    min-width: 0;
+  }
+
+  .iconBadge {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+  }
+
+  .iconBadge svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .columnTitle {
+    min-height: 1.2em;
+  }
+
+  .columnText {
+    margin-top: 8px;
+    font-size: 0.9375rem;
+  }
+
+  .dots {
+    margin-top: 0;
   }
 
   .column:nth-child(1) {

@@ -101,8 +101,19 @@ const EASE_OUT_QUAD = "power2.out";
 const SEPARATE_DURATION = 0.5;
 const SEPARATE_OVERLAP = "-=0.35";
 
-/** Carousel layout (dots + swipe hint) — below the desktop grid breakpoint */
-const CAROUSEL_MEDIA = "(max-width: 800px)";
+/**
+ * Carousel vs pinned grid. The grid needs ~680-760px of height for the
+ * pinned heading + cards, so short viewports (phone landscape) use the
+ * carousel too. 500px sits below every iPad / laptop window (even with iOS
+ * toolbars moving it ~100px) and above every phone in landscape, so the
+ * layout never flips mid-scroll. Keep in sync with the @media queries in
+ * Approach.module.css (same numbers; CSS can't import these).
+ */
+const GRID_MIN_WIDTH = 801;
+const SHORT_MAX_HEIGHT = 500;
+const GRID_MEDIA = `(min-width: ${GRID_MIN_WIDTH}px) and (min-height: ${SHORT_MAX_HEIGHT + 1}px)`;
+/** Exact complement of GRID_MEDIA — dots, swipe hint and leftover cleanup */
+const CAROUSEL_MEDIA = `(max-width: ${GRID_MIN_WIDTH - 1}px), (max-height: ${SHORT_MAX_HEIGHT}px)`;
 const COLUMNS_ID = "approach-pillars";
 
 const getHeaderClearOffset = () => {
@@ -257,14 +268,26 @@ const Approach = () => {
 
     mm.add(
       {
-        desktop: "(min-width: 801px) and (prefers-reduced-motion: no-preference)",
-        reduced: "(min-width: 801px) and (prefers-reduced-motion: reduce)",
+        desktop: `${GRID_MEDIA} and (prefers-reduced-motion: no-preference)`,
+        reduced: `${GRID_MEDIA} and (prefers-reduced-motion: reduce)`,
+        // Without it no condition matches in the carousel layout, and GSAP
+        // never calls this function there to clean up.
+        carousel: CAROUSEL_MEDIA,
       },
       (context) => {
-        const { desktop, reduced } = context.conditions as {
+        const { desktop, reduced, carousel } = context.conditions as {
           desktop: boolean;
           reduced: boolean;
+          carousel: boolean;
         };
+
+        // Carousel: no pin. Leaving the grid, GSAP's revert can write the
+        // stacked start state back onto the cards inline; clear it (outside
+        // the recorded context, so nothing reverts the clear later).
+        if (carousel) {
+          context.ignore(clearDesktopLayout);
+          return;
+        }
 
         if (reduced) {
           measureLayout();

@@ -40,6 +40,7 @@ On iOS WebKit (Safari and Telegram's in-app browser) the toolbars change `innerH
 - App-level `refresh()` calls must not run on height-only resizes there — TrainingExperiences only refreshes on iOS when `innerWidth` changed. Follow the same pattern for any new resize listener.
 - The hero's pin-spacer gets `var(--dark-bg)` so no beige shows while the toolbar animates, and `anticipatePin` is off for the hero.
 - Hero svh heights go through `var(--hero-svh, 100svh)`, frozen to px on iOS (Telegram's web view resizes, so svh moves). Use it for any new svh in the hero.
+- Approach pins its grid only at `(min-width: 801px) and (min-height: 501px)`; narrower OR shorter (phone landscape) is the carousel. 500px sits below every iPad/laptop window even with toolbars, so it never flips mid-scroll. The CSS `@media` queries, the `gsap.matchMedia` conditions and `CAROUSEL_MEDIA` (all from `GRID_MIN_WIDTH` / `SHORT_MAX_HEIGHT` in `Approach.tsx`) must stay in sync.
 - Android Chrome keeps `innerHeight` stable while scrolling, so behavior there (and on desktop) is intentionally unchanged.
 
 ### Media
