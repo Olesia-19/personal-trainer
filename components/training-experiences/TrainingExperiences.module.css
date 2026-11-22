@@ -9,8 +9,6 @@
 
 .stack {
   --header-h: 72px;
-  --card-safe-bottom: clamp(4.5rem, 14vh, 8rem);
-  --card-pad-top: clamp(1.5rem, 4vh, 3rem);
   --dwell: 20svh;
   list-style: none;
   width: 100%;
@@ -18,6 +16,7 @@
   padding: 0;
 }
 
+/* Sticky card sheets (heights unchanged — the scroll animation depends on them) */
 .item {
   position: sticky;
   top: var(--header-h);
@@ -33,6 +32,7 @@
   margin-bottom: 0;
 }
 
+/* Per-card palette, all from existing tokens. Defaults = card 1 (flat). */
 .card {
   position: relative;
   isolation: isolate;
@@ -50,6 +50,19 @@
   will-change: transform;
   --dim: 0;
   --shadow-o: 1;
+  --card-ink: var(--ink);
+  --card-body: var(--ink-muted);
+  /* Accent for the last title word and the check icons */
+  --card-accent: var(--accent-ink);
+  /* Optional underline under the accent word (only where colour alone can't
+     carry the accent) */
+  --card-accent-underline: none;
+  --card-accent-underline-color: transparent;
+  --card-rule: var(--line);
+  /* Price strip: the card background, 5% toward ink */
+  --card-strip: color-mix(in srgb, var(--ink) 5%, var(--bg-deep));
+  /* Muted "/ month" on the strip — kept at >= 4.5:1 against the strip */
+  --card-strip-muted: var(--card-body);
 }
 
 .card::after {
@@ -62,19 +75,6 @@
   opacity: var(--dim, 0);
 }
 
-.cardInner {
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
-  grid-template-rows: auto 1fr;
-  column-gap: clamp(1.25rem, 3vw, 3rem);
-  height: 100%;
-  padding-top: var(--card-pad-top);
-  padding-bottom: var(--card-safe-bottom);
-}
-
 .item[data-theme="flat"] .card {
   background: var(--bg-deep);
   color: var(--ink);
@@ -85,31 +85,27 @@
   background: var(--bg-soft);
   color: var(--ink);
   box-shadow: 0 -28px 56px -18px rgba(27, 24, 21, calc(0.14 * var(--shadow-o)));
+  --card-strip: color-mix(in srgb, var(--ink) 6%, var(--bg-soft));
+  --card-strip-muted: color-mix(in srgb, var(--ink-muted) 70%, var(--ink));
 }
 
+/* Orange card: an orange or cream word would fail contrast on the orange, so
+   the accent word stays ink (--on-accent), same as the rest of the title.
+   Body text, rule and strip are tints of the ink. */
 .item[data-theme="accent"] .card {
   background: var(--accent);
   color: var(--on-accent);
   box-shadow: 0 -28px 56px -18px rgba(27, 24, 21, calc(0.14 * var(--shadow-o)));
+  --card-ink: var(--on-accent);
+  --card-body: color-mix(in srgb, var(--on-accent) 80%, transparent);
+  --card-accent: var(--on-accent);
+  --card-rule: color-mix(in srgb, var(--on-accent) 22%, transparent);
+  --card-strip: color-mix(in srgb, var(--on-accent) 8%, var(--accent));
+  --card-strip-muted: color-mix(in srgb, var(--on-accent) 90%, transparent);
 }
 
 .item[data-theme="accent"] .card::after {
   opacity: 0;
-}
-
-.item[data-theme="accent"] .number,
-.item[data-theme="accent"] .cardDescription,
-.item[data-theme="accent"] .subtitle,
-.item[data-theme="accent"] .items {
-  color: color-mix(in srgb, var(--on-accent) 80%, transparent);
-}
-
-.item[data-theme="accent"] .items li {
-  border-color: color-mix(in srgb, var(--on-accent) 22%, transparent);
-}
-
-.item[data-theme="accent"] .price {
-  color: var(--on-accent);
 }
 
 .item[data-theme="accent"] .applyBtn {
@@ -134,44 +130,139 @@
   background: color-mix(in srgb, var(--on-accent) 7%, transparent);
 }
 
-.cardTop {
+/* ---------- Layout B (base, mobile-first): one column ---------- */
+
+.cardInner {
   position: relative;
   z-index: 1;
-  grid-column: 1;
-  grid-row: 1;
+  box-sizing: border-box;
   display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  padding: 24px;
+}
+
+/* Header group, modules and strip — centred as one block on wide layouts */
+.textCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   min-width: 0;
 }
 
-.number {
-  flex-shrink: 0;
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: var(--ink-faint);
+/* Title + description, closed by the 1px rule */
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--card-rule);
 }
 
 .cardTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+  font-size: 2.25rem;
   font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  color: inherit;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--card-ink);
+}
+
+.titleAccent {
+  color: var(--card-accent);
+  text-decoration-line: var(--card-accent-underline);
+  text-decoration-color: var(--card-accent-underline-color);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.12em;
+}
+
+.cardDescription {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--card-body);
+}
+
+.descriptionLead {
+  font-weight: 500;
+  color: var(--card-ink);
+}
+
+.modules {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--card-body);
+}
+
+.module {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.moduleIcon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--card-accent);
+}
+
+/* Price + button strip. Wraps (button under price) only if a column is too
+   narrow for both, so the button is never squeezed. */
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 12px;
+  padding: 12px 12px 12px 18px;
+  border-radius: 18px;
+  background: var(--card-strip);
+}
+
+.price {
+  margin: 0;
+  color: var(--card-ink);
   white-space: nowrap;
+}
+
+.priceAmount {
+  font-family: var(--font-heading);
+  font-size: 1.625rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.pricePeriod {
+  font-size: 0.875rem;
+  color: var(--card-strip-muted);
+}
+
+.applyBtn {
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 0 22px;
+  font-size: 0.9375rem;
 }
 
 .media {
   position: relative;
   z-index: 1;
-  grid-column: 2;
-  grid-row: 1 / span 2;
+  width: 100%;
   min-height: 0;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: calc(var(--radius-card) - 6px);
+  border-radius: 20px;
   /* Matched to reference: top-right origin (100% 0%) */
   transform-origin: 100% 0%;
   will-change: transform;
@@ -205,7 +296,6 @@
   place-items: center;
   width: 100%;
   height: 100%;
-  min-height: 220px;
   background: color-mix(in srgb, var(--ink) 7%, transparent);
   color: var(--ink-faint);
   font-size: var(--fs-label);
@@ -214,89 +304,7 @@
   text-transform: lowercase;
 }
 
-.cardBody {
-  position: relative;
-  z-index: 1;
-  grid-column: 1;
-  grid-row: 2;
-  align-self: end;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 440px;
-  min-width: 0;
-}
-
-.cardDescription {
-  margin: 0;
-  font-size: var(--fs-body);
-  line-height: 1.55;
-  color: var(--ink-muted);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--ink-muted);
-}
-
-.items {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: var(--fs-small);
-  line-height: 1.45;
-  color: var(--ink-muted);
-}
-
-.items li {
-  padding: 0.7rem 0;
-  border-top: 1px solid var(--line);
-}
-
-.items li:last-child {
-  border-bottom: 1px solid var(--line);
-}
-
-.cardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.price {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: var(--fs-h3);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: inherit;
-}
-
-.applyBtn {
-  flex-shrink: 0;
-}
-
-@media (min-width: 761px) and (max-height: 760px) {
-  .stack {
-    --card-safe-bottom: clamp(3rem, 10vh, 5rem);
-  }
-
-  .cardBody {
-    gap: 0.75rem;
-  }
-
-  .items li {
-    padding: 0.5rem 0;
-  }
-}
-
-/* Mobile stacked fall-back */
+/* ---------- B: phone portrait, sticky stack ---------- */
 @media (max-width: 760px) and (min-height: 600px) and (prefers-reduced-motion: no-preference) {
   .stack {
     --dwell-m: 12svh;
@@ -315,101 +323,153 @@
     margin-bottom: 0;
   }
 
-  .card {
-    height: 100%;
-    border-radius: 0;
-    border: 0;
+  /* Photo takes whatever height is left in the card */
+  .media {
+    flex: 1 1 0;
+    min-height: 0;
+    aspect-ratio: auto;
+    will-change: auto;
   }
+}
 
+/* ---------- A: desktop / tablet, two equal columns ---------- */
+@media (min-width: 761px) {
   .cardInner {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 0.9rem;
-    padding-top: 1.25rem;
-    padding-bottom: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 56px;
+    align-items: center;
+    padding: 56px;
   }
 
-  .cardTop,
-  .media,
-  .cardBody {
-    grid-column: auto;
-    grid-row: auto;
+  .textCol {
+    gap: 24px;
   }
 
+  .cardHeader {
+    gap: 18px;
+    padding-bottom: 20px;
+  }
+
+  /* 40px at 761 → 52px at 1024+ */
   .cardTitle {
-    white-space: normal;
-    font-size: clamp(1.5rem, 7.2vw, 2rem);
+    font-size: clamp(2.5rem, 0.33rem + 4.56vw, 3.25rem);
   }
 
-  .cardBody {
-    flex: 0 0 auto;
-    align-self: stretch;
-    max-width: none;
-    margin-top: 0;
-    gap: 0.85rem;
-  }
-
+  /* 18px at 761 → 22px at 1024+ */
   .cardDescription {
-    font-size: 0.95rem;
+    font-size: clamp(1.125rem, 0.4rem + 1.52vw, 1.375rem);
   }
 
-  .items li {
-    padding: 0.5rem 0;
+  .modules {
+    gap: 10px;
   }
 
-  .cardFooter {
-    flex-wrap: wrap;
+  .strip {
+    border-radius: 20px;
+    padding: 16px 16px 16px 24px;
+  }
+
+  .priceAmount {
+    font-size: 2rem;
+  }
+
+  .pricePeriod {
+    font-size: 1rem;
   }
 
   .applyBtn {
-    min-height: 3rem;
+    min-height: 52px;
+    padding: 0 30px;
+    font-size: var(--btn-fs);
   }
 
+  /* Photo column runs the full card height */
   .media {
-    flex: 1 1 0;
-    min-height: 120px;
-    width: 100%;
+    align-self: stretch;
+    height: auto;
     aspect-ratio: auto;
-    border-radius: calc(var(--radius-card) - 6px);
-    transform-origin: 100% 0%;
-    will-change: auto;
-  }
-
-  .mediaPlaceholder {
-    min-height: 0;
   }
 }
 
-/* Compact phones while still stacking */
-@media (max-width: 760px) and (min-height: 600px) and (max-height: 760px) and (prefers-reduced-motion: no-preference) {
+/* ---------- C: short screens (phone landscape, short desktop window) ---------- */
+@media (max-width: 760px) and (max-height: 599px),
+  (min-width: 761px) and (max-height: 640px) {
   .cardInner {
-    gap: 0.6rem;
-    padding-top: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    column-gap: 28px;
+    align-items: center;
+    padding: 20px 28px;
   }
 
-  .items li {
-    padding-block: 0.4rem;
+  .textCol {
+    gap: 18px;
   }
 
-  .cardDescription {
-    font-size: 0.9rem;
+  .cardHeader {
+    gap: 10px;
+    padding-bottom: 16px;
   }
 
   .cardTitle {
-    font-size: clamp(1.35rem, 6.6vw, 1.75rem);
+    font-size: 2rem;
+  }
+
+  .cardDescription {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+
+  .modules {
+    gap: 6px;
+    font-size: 0.875rem;
+  }
+
+  .moduleIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .strip {
+    border-radius: 16px;
+    padding: 8px 8px 8px 16px;
+  }
+
+  .priceAmount {
+    font-size: 1.5rem;
+  }
+
+  .pricePeriod {
+    font-size: 0.8125rem;
+  }
+
+  .applyBtn {
+    min-height: 44px;
+    padding: 0 22px;
+    font-size: 0.9375rem;
+  }
+
+  .media {
+    align-self: stretch;
+    height: auto;
+    aspect-ratio: auto;
+    border-radius: 18px;
   }
 }
 
-/* Static fallback: short phones, landscape, reduced motion, short desktop */
+/* Static fallback (not sticky): short phones, landscape, reduced motion,
+   short desktop. Everything visible, nothing scaled. */
 @media (max-width: 760px) and (max-height: 599px),
   (min-width: 761px) and (max-height: 640px),
   (prefers-reduced-motion: reduce) {
+  /* Cards meet edge to edge: a gap here showed the section background as a
+     beige band between the sand and orange cards */
   .item {
     position: static;
     height: auto;
     min-height: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     z-index: auto;
   }
 
@@ -423,47 +483,11 @@
   }
 
   .cardInner {
-    display: flex;
-    flex-direction: column;
     height: auto;
-    gap: 0.9rem;
-    padding-top: clamp(1.25rem, 3vh, 2rem);
-    padding-bottom: clamp(1.25rem, 3vh, 2rem);
-  }
-
-  .cardTop,
-  .media,
-  .cardBody {
-    grid-column: auto;
-    grid-row: auto;
-  }
-
-  .cardTitle {
-    white-space: normal;
   }
 
   .media {
-    flex: none;
-    aspect-ratio: 4 / 3;
-    width: 100%;
-    min-height: 0;
-    transform-origin: 100% 0%;
     will-change: auto;
-  }
-
-  .mediaPlaceholder {
-    min-height: 0;
-  }
-
-  .cardBody {
-    flex: 0 0 auto;
-    align-self: stretch;
-    max-width: none;
-    margin-top: 0;
-  }
-
-  .cardFooter {
-    flex-wrap: wrap;
   }
 
   .card,
